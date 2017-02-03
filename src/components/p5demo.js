@@ -4,9 +4,9 @@ import { Generator } from './simplexNoise';
 var sketch = function (p) {
   var generator;
   generator = new Generator(10);
-  var width = 480;
-  var height = 480;
-  var grid = 25;
+  var width = 640;
+  var height = 640;
+  var grid = 30;
   var spacing = ~~(width / grid);
   var radius = 10;
   // setting items for render                   //
@@ -30,7 +30,7 @@ var sketch = function (p) {
 
   // p5.js setup function                       //
   p.setup = function() {
-    p.createCanvas(480, 480, p.WEBGL);
+    p.createCanvas(640, 640, p.WEBGL);
   // simplex noise function                     //
   };
 
@@ -63,11 +63,10 @@ var sketch = function (p) {
     p.background(0);
     p.lighting();
 
-    p.translate((width / 2) - (spacing * grid / 2), -150, -150);
+    p.translate((width / 2) - (spacing * grid / 2), 0, -150);
 
-    camX = (width / 2) - p.mouseX * 0.1;
-    camY = (height / 2) - p.mouseY * 0.1;
-
+    camX = ((width / 2) - p.mouseX) * 0.01;
+    camY = ((height / 2) - p.mouseY)* 0.01;
     p.rotateX(90 - camY);
     p.rotateZ(camX);
   }
