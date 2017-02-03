@@ -75,9 +75,11 @@ var sketch = function (p) {
     p.lighting();
 
     p.translate((width / 2) - (spacing * grid / 2), 0, -150);
-
-    camX = ((width / 2) - p.mouseX) * 0.003; // (p.frameCount * 0.001); //
-    camY = ((height / 2) - p.mouseY)* 0.005; // (height / 2);//
+    // If mouse is inactive pick the center of the screen //
+    var tempX = p.mouseX || 0; // width/2; alt version but this looks better
+    var tempY = p.mouseY || height / 2;
+    camX = ((width / 2) - tempX) * 0.003; // (p.frameCount * 0.001); //
+    camY = ((height / 2) - tempY)* 0.005; // (height / 2);//
     p.rotateX(90 - camY);
     p.rotateZ(camX);
   }
@@ -87,7 +89,7 @@ var sketch = function (p) {
       for (var i = 0; i < spacing; i++) {
         var nPoint = p.abs(generator.simplex3(iteration * i, iteration * j, time * 0.003)) * 25;
         // can directly place nPoint for smoother effects //
-        var zVector = nPoint * 5;
+        var zVector = nPoint * 6;
         // use this line to see ripples in noise
         // var zVector = p.sin(25 * p.PI * nPoint / 360) * 35;
         vertices[i][j] = p.createVector(i * grid, j * grid, 150 - zVector);
