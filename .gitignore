@@ -1,0 +1,9 @@
+# Git Ignore Items
+dist/
+*.log
+.DS_Store
+node_modules/*
+*.gz
+*.iml
+.idea/*
+*.swp

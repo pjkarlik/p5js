@@ -1,0 +1,51 @@
+{
+  "name": "p5js",
+  "version": "0.0.1",
+  "description": "p5js",
+  "main": "index.js",
+  "scripts": {
+    "webpack": "node node_modules/.bin/webpack --progress --colors",
+    "dev": "node node_modules/.bin/webpack-dev-server --progress --colors --content-base dist/",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && webpack --progress --colors"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pjkarlik/p5js.git"
+  },
+  "author": "pjkarlik@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.5.2",
+    "babel-eslint": "^6.0.4",
+    "babel-loader": "^6.2.2",
+    "babel-plugin-transform-object-assign": "^6.5.0",
+    "babel-plugin-transform-proto-to-assign": "^6.6.5",
+    "babel-plugin-transform-runtime": "^6.5.2",
+    "babel-polyfill": "^6.5.0",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-stage-0": "^6.3.13",
+    "css-loader": "^0.23.1",
+    "ejs": "^2.3.1",
+    "eslint": "^2.11.1",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-loader": "^1.2.1",
+    "eslint-plugin-import": "^1.8.1",
+    "eslint-plugin-jsx-a11y": "^1.3.0",
+    "eslint-plugin-react": "^5.1.1",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.8.5",
+    "html-webpack-plugin": "^2.12.0",
+    "json-loader": "^0.5.4",
+    "less": "^2.6.0",
+    "less-loader": "^2.2.2",
+    "postcss-loader": "^0.8.1",
+    "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.12.13",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "dependencies": {
+    "p5": "^0.5.6"
+  }
+}

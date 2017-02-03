@@ -1,0 +1,7 @@
+{
+  "parser": "babel-eslint",
+  "extends" : "eslint-config-airbnb",
+  "rules": {
+     "max-len": [1, 120, 4]
+  }
+}
