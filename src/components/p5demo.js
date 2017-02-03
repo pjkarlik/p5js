@@ -43,12 +43,18 @@ var sketch = function (p) {
     for (var j = 0; j < spacing; j++) {
       for (var i = 0; i < spacing; i++) {
         // generate color values                //
-        var vertZ = vertices[i][j].z * 2;
+        var vertZ = vertices[i][j].z;
 
-        g = p.sin(vertZ * 0.01) * 255;
+        const m = Math.cos(vertZ * .055);
+        const o = Math.sin(vertZ * .055);
+        r = ~~(m * 255);
+        b = ~~(o * 255);
+        g = b;
 
-        r = 0;// vertices[i][j].z * 10;
-        b = 255 - g;// vertices[i][j].z * 2;
+        // original render color mode           //
+        // g = p.sin(vertZ * 0.01) * 255;
+        // r = p.cos(vertZ * 0.05 + time * 0.01) * 255;
+        // b = 255 - g;
 
         colorset = [r , g , b];
         // colorset = [r , 150 - g , 150 + b];
@@ -70,8 +76,8 @@ var sketch = function (p) {
 
     p.translate((width / 2) - (spacing * grid / 2), 0, -150);
 
-    camX = ((width / 2) - p.mouseX) * 0.01;
-    camY = ((height / 2) - p.mouseY)* 0.01;
+    camX = ((width / 2) - p.mouseX) * 0.003; // (p.frameCount * 0.001); //
+    camY = ((height / 2) - p.mouseY)* 0.005; // (height / 2);//
     p.rotateX(90 - camY);
     p.rotateZ(camX);
   }
@@ -81,7 +87,7 @@ var sketch = function (p) {
       for (var i = 0; i < spacing; i++) {
         var nPoint = p.abs(generator.simplex3(iteration * i, iteration * j, time * 0.003)) * 25;
         // can directly place nPoint for smoother effects //
-        var zVector = nPoint * 10;
+        var zVector = nPoint * 5;
         // use this line to see ripples in noise
         // var zVector = p.sin(25 * p.PI * nPoint / 360) * 35;
         vertices[i][j] = p.createVector(i * grid, j * grid, 150 - zVector);
