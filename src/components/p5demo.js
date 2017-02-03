@@ -43,16 +43,21 @@ var sketch = function (p) {
     for (var j = 0; j < spacing; j++) {
       for (var i = 0; i < spacing; i++) {
         // generate color values                //
-        r = vertices[i][j].z * 5.75;
-        g = vertices[i][j].z * 1.75;
-        b = p.sin(g * i) * 55;
-        colorset = [r , 150 - g , 150 + b];
+        var vertZ = vertices[i][j].z * 2;
+
+        g = p.sin(vertZ * 0.01) * 255;
+
+        r = 0;// vertices[i][j].z * 10;
+        b = 255 - g;// vertices[i][j].z * 2;
+
+        colorset = [r , g , b];
+        // colorset = [r , 150 - g , 150 + b];
         // push and move 3D object into place   //
         p.push();
         p.translate(vertices[i][j].x, vertices[i][j].y, vertices[i][j].z);
         p.specularMaterial(colorset);
-        zOffset = ~~(vertices[i][j].z) * 0.1;
-        p.sphere(radius + zOffset);
+        zOffset = ~~(vertices[i][j].z) * 0.3;
+        p.sphere(50 - zOffset);
         p.pop();
       }
     }
@@ -60,7 +65,7 @@ var sketch = function (p) {
 
   p.viewPort = function() {
   // set viewport, background, and lighting     //
-    p.background(0);
+    p.background(0,0,0);
     p.lighting();
 
     p.translate((width / 2) - (spacing * grid / 2), 0, -150);
@@ -74,17 +79,19 @@ var sketch = function (p) {
   p.generateMesh = function() {
     for (var j = 0; j < spacing; j++) {
       for (var i = 0; i < spacing; i++) {
-        var nPoint = p.abs(generator.simplex3(iteration * i, iteration * j, time * 0.003)) * 20;
+        var nPoint = p.abs(generator.simplex3(iteration * i, iteration * j, time * 0.003)) * 25;
         // can directly place nPoint for smoother effects //
-        var zVector = p.sin(25 * p.PI * nPoint / 360) * 35;
-        vertices[i][j] = p.createVector(i * grid, j * grid, zVector);
+        var zVector = nPoint * 10;
+        // use this line to see ripples in noise
+        // var zVector = p.sin(25 * p.PI * nPoint / 360) * 35;
+        vertices[i][j] = p.createVector(i * grid, j * grid, 150 - zVector);
       }
     }
   };
 
   p.lighting = function()  {
-    var pos = 1 * p.sin(2.23123 * 2 / 180 + time * 0.01);
-    var posX = 2 * p.cos(2.23123 * 2 / 180 + time * 0.009);
+    var pos = 1 * p.sin(p.PI * 2 / 180 + time * 0.001);
+    var posX = 2;
     p.directionalLight(250, 250, 250, pos, 0.5, 0);
     p.directionalLight(120, 160, 190, 1 - posX, 0, -1);
   };
