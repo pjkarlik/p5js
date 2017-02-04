@@ -23,8 +23,26 @@ canvas {
   left: 50%;
   transform: translate( -50%, -50%);
 }
+
+@media only screen and (max-width: 768px) {
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
 .wrapper {
   width: 100%;
   height: 100%;
+  overflow: hidden;
   position: relative;
+}
+
+.dg.main {
+  z-index: 100;
+  opacity: 0.9;
+  transition: opacity 700ms ease-out;
+}
+
+.dg.main:hover {
+  opacity: 1;
 }
