@@ -1,6 +1,8 @@
 # p5js Demo
 
 ## Change Log
+  * Change Object sphere / box
+  * Better Shader Formulas.
   * Mouse rotation and Wheel Zoom.
   * Running on p5js - needing to update render.
   * Initial Commit - Basic formula added for simplexNoise.
