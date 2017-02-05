@@ -55,6 +55,14 @@ const sketch = function (p) {
     strength = options.strength || strength;
   };
 
+  p.setResolution = function(options) {
+    grid = options.resolution || grid;
+    spacing = ~~(width / grid);
+    vertices = new Array(spacing);
+    for (var i = 0; i < spacing; i++) {
+      vertices[i] = new Array(spacing);
+    }
+  };
   p.draw = function() {
     time += 1;
     p.generateMesh();
@@ -193,10 +201,14 @@ export default class Render {
   setOptions = (options) => {
     this.myp5.setOptions(options);
   };
+  setResolution = (options) => {
+    this.myp5.setResolution(options);
+  };
   createGUI = () => {
     this.options = {
       iteration: 5,
       strength: 25,
+      resolution: 30,
       shaderType: 'offset',
       objectType: 'sphere',
     };
@@ -215,6 +227,13 @@ export default class Render {
           strength: value,
         };
         this.setOptions(this.options);
+      });
+    folderRender.add(this.options, 'resolution', 15, 75).step(5)
+      .onFinishChange((value) => {
+        this.options = {
+          resolution: value,
+        };
+        this.setResolution(this.options);
       });
     folderRender.add(this.options, 'shaderType',
       ['default', 'octal', 'offset', 'rainbow', 'hashing'])
@@ -235,5 +254,6 @@ export default class Render {
     folderRender.open();
 
     this.setOptions(this.options);
+    this.setResolution(this.options);
   };
 }
