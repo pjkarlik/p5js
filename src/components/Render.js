@@ -92,6 +92,18 @@ const sketch = function (p) {
       g = ~~(255 - 255 * (1 + p.cos((noise * mult) * i)) / 2);
       b = ~~(255 - 255 * (1 - p.sin((noise * mult) * i)) / 2);
 			break;
+    case 'hashing':
+      // original render color mode
+      r = p.cos(noise * p.PI /180 - (time * 0.006)) * (i * 100);
+      g = p.sin(noise * p.PI /180 + (time * 0.01)) * (j * 100);
+      b = 255 - ~~(255 * (1 - p.cos( (noise * mult) * (time * 0.05) ) ));
+      break;
+    case 'offset':
+      var mult = 0.001;
+      r = p.cos(noise * 0.05 + (time * 0.01)) * 255;
+      g = p.cos(noise * 0.05 + (time * 0.02)) * 255;
+      b = p.sin(noise * 0.05 + (time * 0.03)) * 255;
+      break;
     case 'default':
       // original render color mode
       r = p.sin(noise * 0.01) * 255;
@@ -117,7 +129,7 @@ const sketch = function (p) {
     camX = (width_half - tempX) * 0.003; // (p.frameCount * 0.001);
     camY = (height_half - tempY)* 0.005; // (height / 2);
     p.rotateX(90 - camY);
-    p.rotateZ(camX);
+    p.rotateZ(45 - camX);
   }
   p.mouseWheel = function(event) {
     //move the square according to the vertical scroll amount
@@ -175,7 +187,7 @@ export default class Render {
     this.options = {
       iteration: 5,
       strength: 25,
-      shaderType: 'octal',
+      shaderType: 'offset',
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');
@@ -194,7 +206,7 @@ export default class Render {
         this.setOptions(this.options);
       });
     folderRender.add(this.options, 'shaderType',
-      ['default', 'octal', 'rainbow'])
+      ['default', 'octal', 'offset', 'rainbow', 'hashing'])
       .onFinishChange((value) => {
         this.options = {
           shaderType: value,
