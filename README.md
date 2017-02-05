@@ -1,6 +1,7 @@
 # p5js Demo
 
 ## Change Log
+  * AltRender.js - updated render functions.
   * Change Object sphere / box
   * Better Shader Formulas.
   * Mouse rotation and Wheel Zoom.

@@ -144,8 +144,8 @@ const sketch = function (p) {
     // If mouse is inactive pick the center of the screen
     var tempX = p.mouseX || 0; // width/2; alt version but this looks better
     var tempY = p.mouseY || height_half;
-    camX = (width_half - tempX) * 0.003; // (p.frameCount * 0.001);
-    camY = (height_half - tempY)* 0.005; // (height / 2);
+    camX = (width_half - tempX) * 0.006; // (p.frameCount * 0.001);
+    camY = (height_half - tempY)* 0.01; // (height / 2);
     p.rotateX(90 - camY);
     p.rotateZ(45 - camX);
   }
