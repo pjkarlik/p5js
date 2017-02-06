@@ -32,6 +32,10 @@ const sketch = function (p) {
   var zoom = -150;
   var camX = width_half;
   var camY = height_half;
+  var tempX = width_half;
+  var tempY = height_half;
+  var thisX = width_half;
+  var thisY = height_half;
   // building arrays
   var vertices = new Array(spacing);
   for (var i = 0; i < spacing; i++) {
@@ -142,10 +146,12 @@ const sketch = function (p) {
     // move into position to draw grid
     p.translate((width / 2) - (spacing * grid / 2), 0, zoom);
     // If mouse is inactive pick the center of the screen
-    var tempX = p.mouseX || 0; // width/2; alt version but this looks better
-    var tempY = p.mouseY || height_half;
-    camX = (width_half - tempX) * 0.006; // (p.frameCount * 0.001);
-    camY = (height_half - tempY)* 0.01; // (height / 2);
+    tempX = p.mouseIsPressed && p.mouseX || tempX; // width/2; alt version but this looks better
+    tempY = p.mouseIsPressed && p.mouseY || tempY;
+    thisX = thisX - (thisX - tempX) * 0.01;
+    thisY = thisY - (thisY - tempY) * 0.01;
+    camX = (width_half - thisX) * 0.006; // (p.frameCount * 0.001);
+    camY = (height_half - thisY)* 0.01; // (height / 2);
     p.rotateX(90 - camY);
     p.rotateZ(45 - camX);
   }
