@@ -1,6 +1,7 @@
 # p5js Demo
 
 ## Change Log
+  * Mouse Down and Drag - to prevent constant movement.
   * AltRender.js - updated render functions.
   * Change Object sphere / box
   * Better Shader Formulas.

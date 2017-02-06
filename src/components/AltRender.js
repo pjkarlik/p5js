@@ -36,6 +36,7 @@ const sketch = function (p) {
   var tempY = height_half;
   var thisX = width_half;
   var thisY = height_half;
+  var isPressed = false;
   // building arrays
   var vertices = new Array(spacing);
   for (var i = 0; i < spacing; i++) {
@@ -44,7 +45,9 @@ const sketch = function (p) {
 
   // p5.js setup function
   p.setup = function() {
-    p.createCanvas(640, 640, p.WEBGL).mousePressed(p.canvasMousePressed);
+    p.createCanvas(640, 640, p.WEBGL)
+      .mousePressed(() => {isPressed = true;})
+      .mouseReleased(() => {isPressed = false;});
     // above prevents clicks from happening outside of the canvas.
     var fov = 60 / 180 * p.PI;
     var cameraZ = height_half / p.tan(fov/2.0);
@@ -140,17 +143,14 @@ const sketch = function (p) {
       b
     };
   };
-  p.canvasMousePressed = function() {
-    tempX = p.mouseX;
-    tempY = p.mouseY;
-  };
   p.viewPort = function() {
   // set viewport, background, and lighting
     p.background(0,0,0);
     // move into position to draw grid
     p.translate((width / 2) - (spacing * grid / 2), 0, zoom);
     // If mouse is inactive pick the center of the screen
-
+    tempX = isPressed ? p.mouseX : tempX;
+    tempY = isPressed ? p.mouseY : tempY;
     thisX = thisX - (thisX - tempX) * 0.01;
     thisY = thisY - (thisY - tempY) * 0.01;
     camX = (width_half - thisX) * 0.006; // (p.frameCount * 0.001);
