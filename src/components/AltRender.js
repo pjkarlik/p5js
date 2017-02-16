@@ -21,6 +21,7 @@ const sketch = function (p) {
   var shaderType = 'octal';
   var objectType = 'sphere';
   var radius = 10;
+  var autoSpin = false;
   var r = 0;
   var g = 0;
   var b = 0;
@@ -29,7 +30,7 @@ const sketch = function (p) {
   var zOffset = 0;
   var offsetX = 0;
   var offsetY = 0;
-  var zoom = -150;
+  var zoom = -250;
   var camX = width_half;
   var camY = height_half;
   var tempX = width_half;
@@ -57,10 +58,11 @@ const sketch = function (p) {
   };
 
   p.setOptions = function(options) {
-    iteration = (options.iteration / 100) || iteration;
-    shaderType = options.shaderType || shaderType;
-    objectType = options.objectType || objectType;
-    strength = options.strength || strength;
+    iteration = (options.iteration / 100);
+    shaderType = options.shaderType;
+    objectType = options.objectType;
+    strength = options.strength;
+    autoSpin = options.autoSpin;
   };
 
   p.setResolution = function(options) {
@@ -104,7 +106,7 @@ const sketch = function (p) {
   p.shader = function(noise, i, j){
     switch(shaderType) {
 		case 'octal':
-      // octal render color mode
+      // octal render color mode - red and cyan
       const m = Math.cos(noise * .055);
       const o = Math.sin(noise * .055);
       r = ~~(m * 255);
@@ -120,17 +122,19 @@ const sketch = function (p) {
 			break;
     case 'hashing':
       // original render color mode
-      r = p.cos(noise * p.PI /180 - (time * 0.006)) * (i * 100);
-      g = p.sin(noise * p.PI /180 + (time * 0.01)) * (j * 100);
-      b = 255 - ~~(255 * (1 - p.cos( (noise * mult) * (time * 0.05) ) ));
+      r = p.cos(noise * 5 * p.PI /180 - (time * 0.03)) * 255;
+      g = r;
+      b = g;
       break;
     case 'offset':
+      // offset - three waves of render color
       var mult = 0.001;
       r = p.cos(noise * 0.05 + (time * 0.01)) * 255;
       g = p.cos(noise * 0.05 + (time * 0.02)) * 255;
       b = p.sin(noise * 0.05 + (time * 0.03)) * 255;
       break;
     case 'java':
+      // java render color mode
       var mult = 0.001;
       r = ~~(p.cos(noise * 3 * p.PI / 180) * 255);
       g = ~~(p.sin(noise * 2 * p.PI / 180) * 255);
@@ -138,9 +142,9 @@ const sketch = function (p) {
       break;
     case 'default':
       // original render color mode
-      r = p.sin(noise * 0.01) * 255;
-      g = p.cos(noise * 0.05 + (time * 0.01)) * 255;
-      b = 255 - r;
+      r = 195;
+      g = r;
+      b = g;
       break;
     }
     return {
@@ -155,14 +159,14 @@ const sketch = function (p) {
     // move into position to draw grid
     p.translate((width / 2) - (spacing * grid / 2), 0, zoom);
     // If mouse is inactive pick the center of the screen
-    tempX = isPressed ? p.mouseX : tempX;
+    tempX = isPressed ? p.mouseX : autoSpin ? tempX + 0.5 : tempX;
     tempY = isPressed ? p.mouseY : tempY;
     thisX = thisX - (thisX - tempX) * 0.01;
     thisY = thisY - (thisY - tempY) * 0.01;
-    camX = (width_half - thisX) * 0.006; // (p.frameCount * 0.001);
-    camY = (height_half - thisY)* 0.01; // (height / 2);
-    p.rotateX(90 - camY);
-    p.rotateZ(45 - camX);
+    camX = (width_half - thisX) * 0.006;
+    camY = (height_half - thisY) * 0.01;
+    p.rotateX(90 + camY);
+    p.rotateZ(45 + camX);
   }
   p.mouseWheel = function(event) {
     //move the square according to the vertical scroll amount
@@ -222,8 +226,9 @@ export default class Render {
   createGUI = () => {
     this.options = {
       iteration: 5,
-      strength: 25,
+      strength: 20,
       resolution: 30,
+      autoSpin: true,
       shaderType: 'java',
       objectType: 'sphere',
     };
@@ -231,39 +236,34 @@ export default class Render {
     const folderRender = this.gui.addFolder('Render Options');
     folderRender.add(this.options, 'iteration', 0, 10).step(0.1)
       .onFinishChange((value) => {
-        this.options = {
-          iteration: value,
-        };
+        this.options.iteration = value;
         this.setOptions(this.options);
       });
     folderRender.add(this.options, 'strength', 0, 100).step(1)
       .onFinishChange((value) => {
-        this.options = {
-          strength: value,
-        };
+        this.options.strength = value;
         this.setOptions(this.options);
       });
     folderRender.add(this.options, 'resolution', 15, 75).step(5)
       .onFinishChange((value) => {
-        this.options = {
-          resolution: value,
-        };
+        this.options.resolution = value;
         this.setResolution(this.options);
       });
     folderRender.add(this.options, 'shaderType',
       ['default', 'java', 'octal', 'offset', 'rainbow', 'hashing'])
       .onFinishChange((value) => {
-        this.options = {
-          shaderType: value,
-        };
+        this.options.shaderType = value;
         this.setOptions(this.options);
       });
     folderRender.add(this.options, 'objectType',
       ['sphere', 'box'])
       .onFinishChange((value) => {
-        this.options = {
-          objectType: value,
-        };
+        this.options.objectType = value;
+        this.setOptions(this.options);
+      });
+    folderRender.add(this.options, 'autoSpin')
+      .onFinishChange((value) => {
+        this.options.autoSpin = value;
         this.setOptions(this.options);
       });
     folderRender.open();
