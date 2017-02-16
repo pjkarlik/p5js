@@ -130,6 +130,12 @@ const sketch = function (p) {
       g = p.cos(noise * 0.05 + (time * 0.02)) * 255;
       b = p.sin(noise * 0.05 + (time * 0.03)) * 255;
       break;
+    case 'java':
+      var mult = 0.001;
+      r = ~~(p.cos(noise * 3 * p.PI / 180) * 255);
+      g = ~~(p.sin(noise * 2 * p.PI / 180) * 255);
+      b = p.cos(noise * p.PI / 180 + (time * 0.01)) * 255;
+      break;
     case 'default':
       // original render color mode
       r = p.sin(noise * 0.01) * 255;
@@ -218,7 +224,7 @@ export default class Render {
       iteration: 5,
       strength: 25,
       resolution: 30,
-      shaderType: 'offset',
+      shaderType: 'java',
       objectType: 'sphere',
     };
     this.gui = new dat.GUI();
@@ -245,7 +251,7 @@ export default class Render {
         this.setResolution(this.options);
       });
     folderRender.add(this.options, 'shaderType',
-      ['default', 'octal', 'offset', 'rainbow', 'hashing'])
+      ['default', 'java', 'octal', 'offset', 'rainbow', 'hashing'])
       .onFinishChange((value) => {
         this.options = {
           shaderType: value,
