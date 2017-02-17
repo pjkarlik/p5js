@@ -19,7 +19,6 @@ const sketch = function (p) {
   var iteration = 0.075;
   var strength = 25;
   var shaderType = 'octal';
-  var objectType = 'sphere';
   var radius = 10;
   var autoSpin = false;
   var r = 0;
@@ -60,7 +59,6 @@ const sketch = function (p) {
   p.setOptions = function(options) {
     iteration = (options.iteration / 100);
     shaderType = options.shaderType;
-    objectType = options.objectType;
     strength = options.strength;
     autoSpin = options.autoSpin;
   };
@@ -86,26 +84,23 @@ const sketch = function (p) {
         // generate color values - I need I and J for iterations
         var vertZ = p.shader(vertices[i][j].z, i, j);
         //var opacity = p.floor((vertices[i][j].z - 0.1) / (1 - 0));
-        var opacity = 1 - p.floor((p.floor(vertices[i][j].z * 1) - 0.1) / (1 - 0.1));
+        var opacity = p.abs(((vertices[i][j].z * 255) - 0) / (255 - 0));
         colorset = [vertZ.r, vertZ.g, vertZ.b, opacity];
-
+        // if (p.frameCount % 20 === 0) {
+        //   console.log(opacity);
+        // }
         // push and move 3D object into place
         p.specularMaterial(colorset);
         p.push();
-
-        switch(objectType) {
-    		case 'sphere':
-          p.translate(vertices[i][j].x, vertices[i][j].y, vertices[i][j].z);
-          p.sphere(zOffset, 8, 8);
-          break;
-        case 'box':
-          p.translate(vertices[i][j].x, vertices[i][j].y, 100 - (zOffset));
-          p.box(spacing, spacing, zOffset * 2);
-          break;
-        }
+        p.translate(vertices[i][j].x, vertices[i][j].y, 100 - (zOffset));
+        // if (zOffset * 2 > 0) {
+          p.box(spacing, spacing, zOffset);
+        // }
         p.pop();
+
       }
     }
+
   };
 
   p.shader = function(noise, i, j){
@@ -235,7 +230,6 @@ export default class Render {
       resolution: 25,
       autoSpin: true,
       shaderType: 'offset',
-      objectType: 'box',
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');
@@ -258,12 +252,6 @@ export default class Render {
       ['default', 'java', 'octal', 'offset', 'rainbow', 'hashing'])
       .onFinishChange((value) => {
         this.options.shaderType = value;
-        this.setOptions(this.options);
-      });
-    folderRender.add(this.options, 'objectType',
-      ['sphere', 'box'])
-      .onFinishChange((value) => {
-        this.options.objectType = value;
         this.setOptions(this.options);
       });
     folderRender.add(this.options, 'autoSpin')
