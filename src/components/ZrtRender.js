@@ -1,4 +1,3 @@
-
 import p5 from 'p5';
 import { Generator } from './simplexNoise';
 import dat from 'dat-gui';
