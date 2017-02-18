@@ -25,7 +25,6 @@ const sketch = function (p) {
   var b = 0;
   var colorset = [0, 0, 0];
   // setting items for movement
-  var zOffset = 0;
   var offsetX = 0;
   var offsetY = 0;
   var zoom = -250;
@@ -78,18 +77,18 @@ const sketch = function (p) {
     p.translate(-width_half, -height_half, -100);
     for (var j = 0; j < spacing; j++) {
       for (var i = 0; i < spacing; i++) {
-        zOffset = 50 - ~~(vertices[i][j].n) * 0.3;
+        var noise = vertices[i][j].n;
+        var noiseValue = 50 - ~~(noise) * 0.3;
 
-        // generate color values - I need I and J for iterations
-        var vertZ = p.shader(vertices[i][j].n, i, j);
-        var opacity = p.abs(((vertices[i][j].n * 255) - 0) / (255 - 0));
-        colorset = [vertZ.r, vertZ.g, vertZ.b, opacity];
+        var colorset = p.shader(noise, i, j);
+        var opacity = p.abs(((noise * 255) - 0) / (255 - 0));
         var size = width / spacing;
+
         // push and move 3D object into place
-        p.specularMaterial(colorset);
+        p.specularMaterial(colorset.r, colorset.g, colorset.b, opacity);
         p.push();
-        p.translate(i * size, j * size, 100 - (zOffset / 2));
-        p.box(size, size, zOffset);
+        p.translate(i * size, j * size, 100 - (noiseValue / 2));
+        p.box(size, size, noiseValue);
         p.pop();
 
       }
@@ -112,7 +111,7 @@ const sketch = function (p) {
       }
     }
   };
-  
+
   p.shader = function(noise, i, j){
     switch(shaderType) {
 		case 'octal':
@@ -189,10 +188,8 @@ const sketch = function (p) {
 
   p.lighting = function()  {
     // function incase I want to animate lights
-    var pos1 = 1;
-    var pos2 = 2;
-    p.directionalLight(250, 250, 250, pos1, 0.5, 0);
-    p.directionalLight(120, 160, 190, 1 - pos2, 0, -1);
+    p.directionalLight(250, 250, 250, 1, 0.5, 0);
+    p.directionalLight(120, 160, 190, 1, 0, -1);
   };
 };
 /** Processing p5.js Sketch Definition          **/

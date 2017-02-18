@@ -1,4 +1,4 @@
-import Render from './components/MtxRender';
+import Render from './components/AltRender';
 import { description, version } from '../version.json';
 require('../resources/styles/styles.css');
 

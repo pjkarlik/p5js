@@ -1,7 +1,7 @@
 # p5js Demo
   My Experiments with p5js using simplex noise on 3d grids and matrix systems.
-  You can change the render file called in index.js, each variation are experiments
-  in rendering and shader functions.
+  You can change the render file called in index.js, each variation is an
+  explores different features in rendering and shader functions.
 
   CbeRender - 3D Cub system, improving rendering and optimizations.
 

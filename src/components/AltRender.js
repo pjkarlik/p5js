@@ -12,12 +12,12 @@ const sketch = function (p) {
   var height = 640;
   var width_half = width / 2;
   var height_half = height / 2;
-  var grid = 20;
+  var grid;
   var spacing = ~~(width / grid);
   // setting items for render
   var time = 0;
   var iteration = 0.075;
-  var strength = 25;
+  var strength;
   var shaderType = 'octal';
   var objectType = 'sphere';
   var radius = 10;
@@ -82,20 +82,21 @@ const sketch = function (p) {
     for (var j = 0; j < spacing; j++) {
       for (var i = 0; i < spacing; i++) {
         // generate color values - I need I and J for iterations
-        var vertZ = p.shader(vertices[i][j].z, i, j);
-        colorset = [vertZ.r, vertZ.g, vertZ.b];
+        var noise = vertices[i][j].n;
+        var noiseValue = 50 - ~~(150 - noise) * 0.3;
+        var colorset = p.shader(noise, i, j);
+        var size = width / spacing;
+
         // push and move 3D object into place
-        p.specularMaterial(colorset);
+        p.specularMaterial(colorset.r, colorset.g, colorset.b);
         p.push();
-        zOffset = 50 - ~~(vertices[i][j].z) * 0.3;
+        p.translate(i * size, j * size, -noiseValue);
         switch(objectType) {
     		case 'sphere':
-          p.translate(vertices[i][j].x, vertices[i][j].y, vertices[i][j].z);
-          p.sphere(zOffset);
+          p.sphere(noiseValue);
           break;
         case 'box':
-          p.translate(vertices[i][j].x, vertices[i][j].y, 0 - (zOffset));
-          p.box(spacing, spacing, zOffset * 2);
+          p.box(size, size, noiseValue * 2);
           break;
         }
         p.pop();
@@ -103,56 +104,74 @@ const sketch = function (p) {
     }
   };
 
+  p.generateMesh = function() {
+    const timeStop = time * 0.002;
+    for (var j = 0; j < spacing; j++) {
+      for (var i = 0; i < spacing; i++) {
+        var nPoint = p.abs(
+          generator.simplex3(iteration * i + timeStop,
+            iteration * j, timeStop * 0.75)
+          ) * strength;
+
+        var zVector = nPoint * 5;
+        vertices[i][j] = {
+          n: zVector
+        };
+      }
+    }
+  };
+
   p.shader = function(noise, i, j){
     switch(shaderType) {
-		case 'octal':
-      // octal render color mode - red and cyan
-      const m = Math.cos(noise * .055);
-      const o = Math.sin(noise * .055);
-      r = ~~(m * 255);
-      b = ~~(o * 355);
-      g = b;
-			break;
-    case 'rainbow':
-      // rainbow render color mode
-      var mult = 0.004;
-      r = ~~(255 - 255 * (1 - p.sin((noise * mult) * j)) / 2);
-      g = ~~(255 - 255 * (1 + p.cos((noise * mult) * i)) / 2);
-      b = ~~(255 - 255 * (1 - p.sin((noise * mult) * i)) / 2);
-			break;
-    case 'hashing':
-      // original render color mode
-      r = p.cos(noise * 5 * p.PI /180 - (time * 0.03)) * 255;
-      g = r;
-      b = g;
-      break;
-    case 'offset':
-      // offset - three waves of render color
-      var mult = 0.001;
-      r = p.cos(noise * 0.05 + (time * 0.01)) * 255;
-      g = p.cos(noise * 0.05 + (time * 0.02)) * 255;
-      b = p.sin(noise * 0.05 + (time * 0.03)) * 255;
-      break;
-    case 'java':
-      // java render color mode
-      var mult = 0.001;
-      r = ~~(p.cos(noise * 3 * p.PI / 180) * 255);
-      g = ~~(p.sin(noise * 2 * p.PI / 180) * 255);
-      b = p.cos(noise * p.PI / 180 + (time * 0.01)) * 255;
-      break;
-    case 'default':
-      // original render color mode
-      r = 195;
-      g = r;
-      b = g;
-      break;
-    }
+      case 'octal':
+        // octal render color mode - red and cyan
+        const m = Math.cos(noise * .055);
+        const o = Math.sin(noise * .055);
+        r = ~~(m * 255);
+        b = ~~(o * 355);
+        g = b;
+  			break;
+      case 'rainbow':
+        // rainbow render color mode
+        var mult = 0.004;
+        r = ~~(255 - 255 * (1 - p.sin((noise * mult) * j)) / 2);
+        g = ~~(255 - 255 * (1 + p.cos((noise * mult) * i)) / 2);
+        b = ~~(255 - 255 * (1 - p.sin((noise * mult) * i)) / 2);
+  			break;
+      case 'hashing':
+        // original render color mode
+        r = p.cos(noise * 5 * p.PI /180 - (time * 0.03)) * 255;
+        g = r;
+        b = g;
+        break;
+      case 'offset':
+        // offset - three waves of render color
+        var mult = 0.001;
+        r = p.cos(noise * p.PI / 180 + (time * 0.01)) * 255;
+        g = p.cos(noise * p.PI / 180 + (time * 0.02)) * 255;
+        b = p.sin(noise * p.PI / 180 + (time * 0.03)) * 255;
+        break;
+      case 'java':
+        // java render color mode
+        var mult = 0.001;
+        r = ~~(p.cos(noise * 3 * p.PI / 180) * 255);
+        g = ~~(p.sin(noise * 2 * p.PI / 180) * 255);
+        b = p.cos(noise * p.PI / 180 + (time * 0.01)) * 255;
+        break;
+      case 'default':
+        // original render color mode
+        r = 195;
+        g = r;
+        b = g;
+        break;
+      }
     return {
       r,
       g,
       b
     };
   };
+
   p.viewPort = function() {
   // set viewport, background, and lighting
     p.background(0,0,0);
@@ -167,37 +186,20 @@ const sketch = function (p) {
     camY = (height_half - thisY) * 0.01;
     p.rotateX(90 + camY);
     p.rotateZ(45 + camX);
-  }
+  };
+
   p.mouseWheel = function(event) {
     //move the square according to the vertical scroll amount
     zoom += event.delta;
     //uncomment to block page scrolling
     return false;
-  }
-  p.generateMesh = function() {
-    const timeStop = time * 0.002;
-    for (var j = 0; j < spacing; j++) {
-      for (var i = 0; i < spacing; i++) {
-        var nPoint = p.abs(
-          generator.simplex3(iteration * i + timeStop,
-            iteration * j, timeStop * 0.75)
-          // test with p5js noise function - not as dramatic results...
-          // p.noise(iteration * i + timeStop, iteration * j,
-          // timeStop * 0.75) * 2
-        ) * strength;
-        // can directly place nPoint for smoother effects
-         var zVector = nPoint * 6;
-        vertices[i][j] = p.createVector(i * grid, j * grid, 150 - zVector);
-      }
-    }
   };
 
   p.lighting = function()  {
     // function incase I want to animate lights
-    var pos1 = 1;
-    var pos2 = 2;
-    p.directionalLight(250, 250, 250, pos1, 0.5, 0);
-    p.directionalLight(120, 160, 190, 1 - pos2, 0, -1);
+    p.directionalLight(250, 250, 250, 1, 0.5, 0);
+    p.directionalLight(160, 160, 160, 1, 0.5, - 0.5);
+    p.directionalLight(160, 160, 160, 0, 1, -1);
   };
 };
 /** Processing p5.js Sketch Definition          **/
@@ -225,12 +227,12 @@ export default class Render {
   };
   createGUI = () => {
     this.options = {
-      iteration: 5,
-      strength: 20,
-      resolution: 30,
+      iteration: 2.5,
+      strength: 35,
+      resolution: 20,
       autoSpin: true,
-      shaderType: 'java',
-      objectType: 'sphere',
+      shaderType: 'hashing',
+      objectType: 'box',
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');
@@ -244,7 +246,7 @@ export default class Render {
         this.options.strength = value;
         this.setOptions(this.options);
       });
-    folderRender.add(this.options, 'resolution', 15, 75).step(5)
+    folderRender.add(this.options, 'resolution', 15, 100).step(5)
       .onFinishChange((value) => {
         this.options.resolution = value;
         this.setResolution(this.options);

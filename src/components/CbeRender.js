@@ -26,7 +26,6 @@ const sketch = function (p) {
   var b = 0;
   var colorset = [0, 0, 0];
   // setting items for movement
-  var zOffset = 0;
   var offsetX = 0;
   var offsetY = 0;
   var zoom = -600;
@@ -87,15 +86,14 @@ const sketch = function (p) {
     for (var k = 0; k < spacing; k++) {
       for (var j = 0; j < spacing; j++) {
         for (var i = 0; i < spacing; i++) {
-          zOffset = 50 - ~~(vertices[i][j][k].n) * 0.3;
-
-          // generate color values - I need I and J for iterations
-          var vertZ = p.shader(vertices[i][j][k].n, i, j);
-          var opacity = p.abs(((vertices[i][j][k].n * 255) - 0) / (255 - 0));
-          colorset = [vertZ.r, vertZ.g, vertZ.b, 255];
+          var noise = vertices[i][j][k].n;
+          // noiseValue = 50 - ~~(noise) * 0.3;
+          var colorset = p.shader(noise, i, j);
+          var opacity = p.abs((noise * 255) / (255 - 0));
           var size = width / spacing;
+
           // push and move 3D object into place
-          p.ambientMaterial(colorset);
+          p.ambientMaterial(colorset.r, colorset.g, colorset.b, 255);
           p.push();
           p.translate(i * size, j * size, k * size);
           if (opacity > 50) {
