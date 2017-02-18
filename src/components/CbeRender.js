@@ -77,12 +77,13 @@ const sketch = function (p) {
       }
     }
   };
+
   p.draw = function() {
     time += 1;
     p.generateMesh();
     p.viewPort();
     // move to center to start drawing grid
-    p.translate(-width_half, -height_half, -100);
+    p.translate(-width_half, -height_half, -height_half);
     for (var k = 0; k < spacing; k++) {
       for (var j = 0; j < spacing; j++) {
         for (var i = 0; i < spacing; i++) {
@@ -90,18 +91,14 @@ const sketch = function (p) {
 
           // generate color values - I need I and J for iterations
           var vertZ = p.shader(vertices[i][j][k].n, i, j);
-          //var opacity = p.floor((vertices[i][j].z - 0.1) / (1 - 0));
-          var opacity = p.abs(((vertices[i][j][k].n * 155) - 0) / (255 - 0));
-          colorset = [vertZ.r, vertZ.g, vertZ.b, opacity];
-          // if (p.frameCount % 20 === 0) {
-          //   console.log(opacity);
-          // }
+          var opacity = p.abs(((vertices[i][j][k].n * 255) - 0) / (255 - 0));
+          colorset = [vertZ.r, vertZ.g, vertZ.b, 255];
+          var size = width / spacing;
           // push and move 3D object into place
           p.ambientMaterial(colorset);
           p.push();
-          p.translate(vertices[i][j][k].x, vertices[i][j][k].y, vertices[i][j][k].z);
+          p.translate(i * size, j * size, k * size);
           if (opacity > 50) {
-            var size = width / spacing * 0.95;
             p.box(size, size, size);
           }
           p.pop();
@@ -109,7 +106,25 @@ const sketch = function (p) {
         }
       }
     }
+  };
 
+  p.generateMesh = function() {
+    const timeStop = time * 0.002;
+    for (var k = 0; k < spacing; k++) {
+      for (var j = 0; j < spacing; j++) {
+        for (var i = 0; i < spacing; i++) {
+          var nPoint = p.abs(
+            generator.simplex3(iteration * i,
+              iteration * j, (iteration * k) + (timeStop * 0.85))
+            ) * strength;
+
+          var zVector = nPoint * 6;
+          vertices[i][j][k] = {
+            n: 150 - zVector
+          };
+        }
+      }
+    }
   };
 
   p.shader = function(noise, i, j){
@@ -183,37 +198,11 @@ const sketch = function (p) {
     //uncomment to block page scrolling
     return false;
   }
-  p.generateMesh = function() {
-    const timeStop = time * 0.002;
-    for (var k = 0; k < spacing; k++) {
-      for (var j = 0; j < spacing; j++) {
-        for (var i = 0; i < spacing; i++) {
-          var nPoint = p.abs(
-            generator.simplex3(iteration * i,
-              iteration * j, (iteration * k) + (timeStop * 0.85))
-            // test with p5js noise function - not as dramatic results...
-            // p.noise(iteration * i + timeStop, iteration * j,
-            // timeStop * 0.75) * 2
-          ) * strength;
-          // can directly place nPoint for smoother effects
-           var zVector = nPoint * 6;
-           vertices[i][j][k] = {
-             x: i * grid,
-             y: j * grid,
-             z: (spacing * grid / 2) - k * grid,
-             n: 150 - zVector
-           };
-        }
-      }
-    }
-  };
 
   p.lighting = function()  {
     // function incase I want to animate lights
-    var pos1 = 1;
-    var pos2 = 2;
-    p.directionalLight(250, 250, 250, pos1, 0.5, 0);
-    p.directionalLight(120, 160, 190, 1 - pos2, 0, -1);
+    p.directionalLight(250, 250, 250, 1, 0.5, 0);
+    p.directionalLight(120, 120, 120, 1, 0, -0.5);
   };
 };
 /** Processing p5.js Sketch Definition          **/
