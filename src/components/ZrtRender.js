@@ -78,30 +78,41 @@ const sketch = function (p) {
     p.translate(-width_half, -height_half, -100);
     for (var j = 0; j < spacing; j++) {
       for (var i = 0; i < spacing; i++) {
-        zOffset = 50 - ~~(vertices[i][j].z) * 0.3;
+        zOffset = 50 - ~~(vertices[i][j].n) * 0.3;
 
         // generate color values - I need I and J for iterations
-        var vertZ = p.shader(vertices[i][j].z, i, j);
-        //var opacity = p.floor((vertices[i][j].z - 0.1) / (1 - 0));
-        var opacity = p.abs(((vertices[i][j].z * 255) - 0) / (255 - 0));
+        var vertZ = p.shader(vertices[i][j].n, i, j);
+        var opacity = p.abs(((vertices[i][j].n * 255) - 0) / (255 - 0));
         colorset = [vertZ.r, vertZ.g, vertZ.b, opacity];
-        // if (p.frameCount % 20 === 0) {
-        //   console.log(opacity);
-        // }
+        var size = width / spacing;
         // push and move 3D object into place
         p.specularMaterial(colorset);
         p.push();
-        p.translate(vertices[i][j].x, vertices[i][j].y, 100 - (zOffset));
-        // if (zOffset * 2 > 0) {
-          p.box(spacing, spacing, zOffset);
-        // }
+        p.translate(i * size, j * size, 100 - (zOffset / 2));
+        p.box(size, size, zOffset);
         p.pop();
 
       }
     }
-
   };
 
+  p.generateMesh = function() {
+    const timeStop = time * 0.002;
+    for (var j = 0; j < spacing; j++) {
+      for (var i = 0; i < spacing; i++) {
+        var nPoint = p.abs(
+          generator.simplex3(iteration * i + timeStop,
+            iteration * j, timeStop * 0.75)
+          ) * strength;
+        // can directly place nPoint for smoother effects
+        var zVector = nPoint * 6;
+        vertices[i][j] = {
+          n: 150 - zVector
+        };
+      }
+    }
+  };
+  
   p.shader = function(noise, i, j){
     switch(shaderType) {
 		case 'octal':
@@ -152,6 +163,7 @@ const sketch = function (p) {
       b
     };
   };
+
   p.viewPort = function() {
   // set viewport, background, and lighting
     p.background(20,20,20);
@@ -167,29 +179,13 @@ const sketch = function (p) {
     p.rotateX(90 + camY);
     p.rotateZ(45 + camX);
   }
+
   p.mouseWheel = function(event) {
     //move the square according to the vertical scroll amount
     zoom += event.delta;
     //uncomment to block page scrolling
     return false;
   }
-  p.generateMesh = function() {
-    const timeStop = time * 0.002;
-    for (var j = 0; j < spacing; j++) {
-      for (var i = 0; i < spacing; i++) {
-        var nPoint = p.abs(
-          generator.simplex3(iteration * i + timeStop,
-            iteration * j, timeStop * 0.75)
-          // test with p5js noise function - not as dramatic results...
-          // p.noise(iteration * i + timeStop, iteration * j,
-          // timeStop * 0.75) * 2
-        ) * strength;
-        // can directly place nPoint for smoother effects
-         var zVector = nPoint * 6;
-        vertices[i][j] = p.createVector(i * grid, j * grid, 150 - zVector);
-      }
-    }
-  };
 
   p.lighting = function()  {
     // function incase I want to animate lights
@@ -224,9 +220,9 @@ export default class Render {
   };
   createGUI = () => {
     this.options = {
-      iteration: 3.5,
+      iteration: 3,
       strength: 70,
-      resolution: 25,
+      resolution: 20,
       autoSpin: true,
       shaderType: 'offset',
     };
