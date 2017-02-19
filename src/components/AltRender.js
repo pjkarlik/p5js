@@ -79,21 +79,21 @@ const sketch = function (p) {
     p.viewPort();
     // move to center to start drawing grid
     p.translate(-width_half, -height_half, -100);
+    var size = width / spacing;
     for (var j = 0; j < spacing; j++) {
       for (var i = 0; i < spacing; i++) {
         // generate color values - I need I and J for iterations
-        var noise = vertices[i][j].n;
-        var noiseValue = 50 - ~~(150 - noise) * 0.3;
+        var noise = ~~(vertices[i][j].n);
+        var noiseValue = 50 - (150 - noise) * 0.3;
         var colorset = p.shader(noise, i, j);
-        var size = width / spacing;
-
+        // var opacity = p.abs(((noise * 255) - 0.01) / (255 - 0.01));
         // push and move 3D object into place
-        p.specularMaterial(colorset.r, colorset.g, colorset.b);
         p.push();
         p.translate(i * size, j * size, -noiseValue);
+        p.ambientMaterial(colorset.r, colorset.g, colorset.b);
         switch(objectType) {
     		case 'sphere':
-          p.sphere(noiseValue);
+          p.sphere(noiseValue * .95, 12, 8);
           break;
         case 'box':
           p.box(size, size, noiseValue * 2);
@@ -109,8 +109,8 @@ const sketch = function (p) {
     for (var j = 0; j < spacing; j++) {
       for (var i = 0; i < spacing; i++) {
         var nPoint = p.abs(
-          generator.simplex3(iteration * i + timeStop,
-            iteration * j, timeStop * 0.75)
+          generator.simplex3(iteration * i,
+            iteration * j + timeStop, timeStop * 0.01)
           ) * strength;
 
         var zVector = nPoint * 5;
@@ -146,21 +146,19 @@ const sketch = function (p) {
         break;
       case 'offset':
         // offset - three waves of render color
-        var mult = 0.001;
-        r = p.cos(noise * p.PI / 180 + (time * 0.01)) * 255;
-        g = p.cos(noise * p.PI / 180 + (time * 0.02)) * 255;
-        b = p.sin(noise * p.PI / 180 + (time * 0.03)) * 255;
+        r = p.cos(noise * p.PI / 180 + (time * 0.001)) * 255;
+        g = p.sin(noise * p.PI / 180 + (time * 0.005)) * 255;
+        b = p.cos(noise * p.PI / 180 + (time * 0.01)) * 255;
         break;
       case 'java':
         // java render color mode
-        var mult = 0.001;
         r = ~~(p.cos(noise * 3 * p.PI / 180) * 255);
         g = ~~(p.sin(noise * 2 * p.PI / 180) * 255);
         b = p.cos(noise * p.PI / 180 + (time * 0.01)) * 255;
         break;
       case 'default':
         // original render color mode
-        r = 195;
+        r = 255 - p.cos(noise * p.PI / 180) * 255;
         g = r;
         b = g;
         break;
@@ -198,7 +196,7 @@ const sketch = function (p) {
   p.lighting = function()  {
     // function incase I want to animate lights
     p.directionalLight(250, 250, 250, 1, 0.5, 0);
-    p.directionalLight(160, 160, 160, 1, 0.5, - 0.5);
+    p.directionalLight(160, 160, 160, 1, 0.5, -0.5);
     p.directionalLight(160, 160, 160, 0, 1, -1);
   };
 };
@@ -227,11 +225,11 @@ export default class Render {
   };
   createGUI = () => {
     this.options = {
-      iteration: 2.5,
+      iteration: 5,
       strength: 35,
-      resolution: 20,
+      resolution: 30,
       autoSpin: true,
-      shaderType: 'hashing',
+      shaderType: 'offset',
       objectType: 'box',
     };
     this.gui = new dat.GUI();
