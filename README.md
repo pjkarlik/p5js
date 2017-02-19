@@ -1,17 +1,20 @@
 # p5js Demo
   My Experiments with p5js using simplex noise on 3d grids and matrix systems.
-  You can change the render file called in index.js, each variation is an
-  explores different features in rendering and shader functions.
+  You can change the render file called in index.js, each variation
+  explores different features in rendering and shader functions. Using dat-gui
+  to control display and render options.
+
+  AltRender - Grid system, defaults to boxes and offset color shader.
 
   CbeRender - 3D Cub system, improving rendering and optimizations.
 
   MtxRender - 3D Cube system, higher resolution settings can cause a slow down.
   ZrtRender - Grid system, block render method and opacity shaders.
 
-  AltRender - Grid system using dat-gui to control display settings.
   Render - Original Render, initial framework with basic interaction.
 
 ## Change Log
+  * Optimizations on display, and translation in p5js 3d space.
   * Mouse Down and Drag - to prevent constant movement.
   * AltRender.js - updated render functions.
   * Change Object sphere / box
