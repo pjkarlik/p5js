@@ -4,6 +4,8 @@
   explores different features in rendering and shader functions. Using dat-gui
   to control display and render options.
 
+  NEW: http://p5js-flyby.surge.sh/ Flyby Demo - put a nice song on and just watch!
+  
   AltRender - Grid system, defaults to boxes and offset color shader.
 
   CbeRender - 3D Cub system, improving rendering and optimizations.
