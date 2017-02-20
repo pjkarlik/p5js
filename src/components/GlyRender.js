@@ -103,7 +103,7 @@ const sketch = function (p) {
     const timeStop = time * speed;
     for (var j = 0; j < spacing * 2; j++) {
       for (var i = 0; i < spacing; i++) {
-        var nPoint = p.abs(
+        var nPoint = Math.abs(
           generator.simplex3(iteration * i,
             iteration * j + timeStop, timeStop * 0.1)
           ) * strength;
@@ -120,8 +120,8 @@ const sketch = function (p) {
     switch(shaderType) {
       case 'octal':
         // octal render color mode - red and cyan
-        const m = Math.cos(noise * p.PI / 180);
-        const o = Math.sin(noise * 4 * p.PI / 180);
+        const m = Math.cos(noise * Math.PI / 180);
+        const o = Math.sin(noise * 4 * Math.PI / 180);
         r = ~~(m * 155);
         g = 255 - r;
         b = ~~(o * 255);
@@ -130,35 +130,35 @@ const sketch = function (p) {
       case 'rainbow':
         // rainbow render color mode
         var mult = 0.004;
-        r = ~~(255 - 255 * (1 - p.sin((noise * mult) * j)) / 2);
-        g = ~~(255 - 255 * (1 + p.cos((noise * mult) * i)) / 2);
-        b = p.cos(noise * 5 * p.PI /180 - (time * 0.03)) * 255;
-        op = p.abs(((noise * 255) - 0.01) / (255 - 0.01));
+        r = ~~(255 - 255 * (1 - Math.sin((noise * mult) * j)) / 2);
+        g = ~~(255 - 255 * (1 + Math.cos((noise * mult) * i)) / 2);
+        b = Math.cos(noise * 5 * Math.PI /180 - (time * 0.03)) * 255;
+        op = Math.abs(((noise * 255) - 0.01) / (255 - 0.01));
   			break;
       case 'hashing':
         // original render color mode
-        r = p.cos(noise * 3 * p.PI /180 - (time * 0.01)) * 255;
+        r = Math.cos(noise * 3 * Math.PI /180 - (time * 0.01)) * 255;
         g = r;
         b = g;
         op = 255;
         break;
       case 'offset':
         // offset - three waves of render color
-        r = p.cos(noise * p.PI / 180 + (time * 0.001)) * 255;
-        g = p.cos(noise * p.PI / 180 + (time * 0.005)) * 255;
-        b = p.sin(noise * p.PI / 180 + (time * 0.01)) * 255;
+        r = Math.cos(noise * Math.PI / 180 + (time * 0.001)) * 255;
+        g = Math.cos(noise * Math.PI / 180 + (time * 0.005)) * 255;
+        b = Math.sin(noise * Math.PI / 180 + (time * 0.01)) * 255;
         op = 255;
         break;
       case 'java':
         // java render color mode
-        r = p.cos(noise * p.PI / 180 + (time * 0.005)) * 255;
-        g = p.sin(1 + noise * p.PI / 180 - (time * 0.01)) * 255;
-        b = p.cos(1 - noise * 2 * p.PI / 180) * 255;
+        r = Math.cos(noise * Math.PI / 180 + (time * 0.005)) * 255;
+        g = Math.sin(1 + noise * Math.PI / 180 - (time * 0.01)) * 255;
+        b = Math.cos(1 - noise * 2 * Math.PI / 180) * 255;
         op = 255;
         break;
       case 'default':
         // original render color mode
-        r = 255 - p.cos(noise * p.PI / 180) * 255;
+        r = 255 - Math.cos(noise * Math.PI / 180) * 255;
         g = r;
         b = g;
         op = r;
