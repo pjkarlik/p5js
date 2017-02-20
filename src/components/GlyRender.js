@@ -39,7 +39,7 @@ const sketch = function (p) {
   var tempY = height_half;
   var thisX = width_half;
   var thisY = height_half;
-  var isPressed = false;
+  var lastHigh = 0;
   // building arrays
   var vertices = new Array(spacing);
   for (var i = 0; i < spacing; i++) {
@@ -88,7 +88,9 @@ const sketch = function (p) {
         var noise = ~~(vertices[i][j].n);
         var noiseValue = 50 - (150 - noise) * 0.3;
         var colorset = p.shader(noise, i, j);
-        var opacity = 255; //p.abs(((noise * 255) - 0.01) / (255 - 0.01));
+        if (noise > lastHigh && j % 20 == 0) {
+          lastHigh = noise;
+        }
         // push and move 3D object into place
         p.push();
         p.translate(i * size, j * size * 1.5, -noiseValue);
@@ -132,12 +134,12 @@ const sketch = function (p) {
         var mult = 0.004;
         r = ~~(255 - 255 * (1 - Math.sin((noise * mult) * j)) / 2);
         g = ~~(255 - 255 * (1 + Math.cos((noise * mult) * i)) / 2);
-        b = Math.cos(noise * 5 * Math.PI /180 - (time * 0.03)) * 255;
+        b = Math.cos(noise * 5 * Math.PI / 180 - (time * 0.03)) * 255;
         op = Math.abs(((noise * 255) - 0.01) / (255 - 0.01));
   			break;
       case 'hashing':
         // original render color mode
-        r = Math.cos(noise * 3 * Math.PI /180 - (time * 0.01)) * 255;
+        r = Math.cos(noise * 3 * Math.PI / 180 - (time * 0.01)) * 255;
         g = r;
         b = g;
         op = 255;
@@ -147,7 +149,7 @@ const sketch = function (p) {
         r = Math.cos(noise * Math.PI / 180 + (time * 0.001)) * 255;
         g = Math.cos(noise * Math.PI / 180 + (time * 0.005)) * 255;
         b = Math.sin(noise * Math.PI / 180 + (time * 0.01)) * 255;
-        op = Math.abs(((noise * b) - 0.01) / (b - 0.01));
+        op = ((noise * g) - 1) / (g - 1);
         break;
       case 'java':
         // java render color mode
@@ -191,13 +193,13 @@ const sketch = function (p) {
   p.checkForChange = function() {
     // tempX = isPressed ? p.mouseX : tempX;
     // tempY = isPressed ? p.mouseY : tempY;
-    if (p.random(1,255) > 254 && !timeout) {
+    if (p.random(1,255) > 252 && !timeout) {
       tempX = width_half - (width - p.random(1, width * 2));
       p.pauseChange();
       console.log('X:' + tempX);
     }
-    if (p.random(1,255) > 253 && !timeout) {
-      tempY = height_half - (50 - p.random(1,100));
+    if (p.random(1,255) > 250 && !timeout) {
+      tempY = height_half - (lastHigh / 16) - (50 - p.random(1, 120));
       p.pauseChange();
       console.log('Y:' + tempY);
     }
