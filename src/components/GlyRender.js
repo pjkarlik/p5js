@@ -91,9 +91,9 @@ const sketch = function (p) {
         var opacity = 255; //p.abs(((noise * 255) - 0.01) / (255 - 0.01));
         // push and move 3D object into place
         p.push();
-        p.translate(i * size, j * size * 2, -noiseValue);
+        p.translate(i * size, j * size * 1.5, -noiseValue);
         p.ambientMaterial(colorset.r, colorset.g, colorset.b, colorset.op);
-        p.box(size, size * 2, noiseValue * 2);
+        p.box(size, size * 1.5, noiseValue * 2);
         p.pop();
       }
     }
@@ -122,10 +122,10 @@ const sketch = function (p) {
         // octal render color mode - red and cyan
         const m = Math.cos(noise * Math.PI / 180);
         const o = Math.sin(noise * 4 * Math.PI / 180);
-        r = ~~(m * 155);
-        g = 255 - r;
+        g = ~~(m * 155);
+        r = 255 - g;
         b = ~~(o * 255);
-        op = r;
+        op = g;
   			break;
       case 'rainbow':
         // rainbow render color mode
@@ -147,7 +147,7 @@ const sketch = function (p) {
         r = Math.cos(noise * Math.PI / 180 + (time * 0.001)) * 255;
         g = Math.cos(noise * Math.PI / 180 + (time * 0.005)) * 255;
         b = Math.sin(noise * Math.PI / 180 + (time * 0.01)) * 255;
-        op = 255;
+        op = Math.abs(((noise * b) - 0.01) / (b - 0.01));
         break;
       case 'java':
         // java render color mode
@@ -219,8 +219,8 @@ const sketch = function (p) {
 
   p.lighting = function()  {
     // function incase I want to animate lights
-    p.directionalLight(250, 250, 250, 1, 0.5, 0);
-    p.directionalLight(160, 160, 160, 1, 0, 1);
+    p.directionalLight(250, 250, 250, 1, 1, 0);
+    p.directionalLight(160, 160, 160, 1, -1, 1);
     p.directionalLight(160, 160, 160, 0, 1, -1);
   };
 };
