@@ -43,7 +43,7 @@ canvas {
   opacity: 1;
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 980px) {
   canvas {
     width: 100% !important;
     height: 100% !important;

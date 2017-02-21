@@ -93,9 +93,10 @@ const sketch = function (p) {
         }
         // push and move 3D object into place
         p.push();
-        p.translate(i * size, j * size * 1.25, -noiseValue * 2);
+        p.translate(i * size, j * size, -noiseValue * 2);
         p.ambientMaterial(colorset.r, colorset.g, colorset.b, colorset.op);
-        p.box(size, size * 1.25, 50);
+        // p.rect(0, 0, size, size);
+        p.box(size, size, 50);
         p.pop();
       }
     }
@@ -183,7 +184,8 @@ const sketch = function (p) {
 
   p.viewPort = function() {
   // set viewport, background, and lighting
-    p.background(0,0,0);
+    var color = p.shader(255 - lastHigh);
+    p.background(color.r, color.g, color.b);
     // move into position to draw grid
     p.translate((width / 2) - (spacing * grid / 2), -200, zoom);
     p.checkForChange();
@@ -223,7 +225,7 @@ const sketch = function (p) {
     // function incase I want to animate lights
     p.directionalLight(250, 250, 250, 1, 1, 0);
     p.directionalLight(160, 160, 160, 1, -1, 1);
-    p.directionalLight(160, 160, 160, 0, 1, -1);
+    p.directionalLight(205, 205, 205, 0, 1, 1);
   };
 };
 /** Processing p5.js Sketch Definition          **/
