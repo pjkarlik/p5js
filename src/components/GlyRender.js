@@ -14,11 +14,13 @@ const sketch = function (p) {
   var height_half = height / 2;
   var grid;
   var spacing = ~~(width / grid);
+  var spacer = 0;
   // setting items for render
   var time = 0;
-  var iteration = 0.075;
+  var timeNoise = 0;
+  var iteration = 0.5;
   var strength;
-  var speed;
+  var speed = 10;
   var shaderType;
   var radius = 10;
   var autoSpin = false;
@@ -62,7 +64,7 @@ const sketch = function (p) {
   p.setOptions = function(options) {
     iteration = (options.iteration / 100);
     shaderType = options.shaderType;
-    speed = (options.speed / 10000);
+    speed = options.speed;
     strength = options.strength;
     autoSpin = options.autoSpin;
   };
@@ -76,12 +78,19 @@ const sketch = function (p) {
     }
   };
   p.draw = function() {
-    time += 1;
+    var size = ~~(width / spacing);
+    spacer = spacer + speed;
+    if (spacer > ~~(size * 1.25)) {
+      // console.log(p.round(size * 1.25));
+      time += 1;
+      spacer = 0;
+    }
+
     p.generateMesh();
     p.viewPort();
     // move to center to start drawing grid
     p.translate(-width_half, -height, 200);
-    var size = width / spacing;
+
     for (var j = 0; j < spacing * 2; j++) {
       for (var i = 0; i < spacing; i++) {
         // generate color values - I need I and J for iterations
@@ -93,7 +102,7 @@ const sketch = function (p) {
         }
         // push and move 3D object into place
         p.push();
-        p.translate(i * size, j * size * 1.25, -noiseValue * 2);
+        p.translate(i * size, j * ~~(size * 1.25) - spacer, -noiseValue * 2);
         p.ambientMaterial(colorset.r, colorset.g, colorset.b, colorset.op);
         p.box(size, size * 1.25, 50);
         p.pop();
@@ -102,20 +111,72 @@ const sketch = function (p) {
   };
 
   p.generateMesh = function() {
-    const timeStop = time * speed;
+    timeNoise += 1;
+    const timeStop = time * iteration;
     for (var j = 0; j < spacing * 2; j++) {
       for (var i = 0; i < spacing; i++) {
         var nPoint = Math.abs(
           generator.simplex3(iteration * i,
-            iteration * j + timeStop, timeStop * 0.1)
+            iteration * j + timeStop, (timeNoise * 0.0025) )
           ) * strength;
-
         var zVector = nPoint * 5;
         vertices[i][j] = {
           n: zVector
         };
       }
     }
+  };
+
+  p.pauseChange = function() {
+    timeout = true;
+    setTimeout(() => {
+      timeout = false;
+    }, 6000);
+  };
+
+  p.viewPort = function() {
+  // set viewport, background, and lighting
+    p.background(0,0,0);
+    // move into position to draw grid
+    p.translate((width / 2) - (spacing * grid / 2), -200, zoom);
+    p.checkForChange();
+    p.moveVectors();
+    p.rotateX(90 + camY);
+    p.rotateZ(camX);
+  };
+
+  p.checkForChange = function() {
+    // tempX = isPressed ? p.mouseX : tempX;
+    // tempY = isPressed ? p.mouseY : tempY;
+    if (p.random(1,255) > 252 && !timeout) {
+      tempX = width_half - (width - p.random(1, width * 2));
+      p.pauseChange();
+    }
+    if (p.random(1,255) > 250 && !timeout) {
+      tempY = height_half - (lastHigh / 8) - (60 - p.random(1, 120));
+      p.pauseChange();
+    }
+  };
+
+  p.moveVectors = function(){
+    thisX = thisX - (thisX - tempX) * 0.006;
+    thisY = thisY - (thisY - tempY) * 0.006;
+    camX = (width_half - thisX) * 0.006;
+    camY = (height_half - thisY) * 0.008;
+  };
+
+  p.mouseWheel = function(event) {
+    //move the square according to the vertical scroll amount
+    zoom += event.delta;
+    //uncomment to block page scrolling
+    return false;
+  };
+
+  p.lighting = function()  {
+    // function incase I want to animate lights
+    p.directionalLight(250, 250, 250, 1, 1, 0);
+    p.directionalLight(160, 160, 160, 1, -1, 1);
+    p.directionalLight(160, 160, 160, 0, 1, -1);
   };
 
   p.shader = function(noise, i, j){
@@ -173,59 +234,9 @@ const sketch = function (p) {
       op
     };
   };
-
-  p.pauseChange = function() {
-    timeout = true;
-    setTimeout(() => {
-      timeout = false;
-    }, 3000);
-  };
-
-  p.viewPort = function() {
-  // set viewport, background, and lighting
-    p.background(0,0,0);
-    // move into position to draw grid
-    p.translate((width / 2) - (spacing * grid / 2), -200, zoom);
-    p.checkForChange();
-    p.moveVectors();
-    p.rotateX(90 + camY);
-    p.rotateZ(camX);
-  };
-
-  p.checkForChange = function() {
-    // tempX = isPressed ? p.mouseX : tempX;
-    // tempY = isPressed ? p.mouseY : tempY;
-    if (p.random(1,255) > 252 && !timeout) {
-      tempX = width_half - (width - p.random(1, width * 2));
-      p.pauseChange();
-    }
-    if (p.random(1,255) > 250 && !timeout) {
-      tempY = height_half - (lastHigh / 8) - (60 - p.random(1, 120));
-      p.pauseChange();
-    }
-  };
-
-  p.moveVectors = function(){
-    thisX = thisX - (thisX - tempX) * 0.01;
-    thisY = thisY - (thisY - tempY) * 0.01;
-    camX = (width_half - thisX) * 0.006;
-    camY = (height_half - thisY) * 0.01;
-  };
-
-  p.mouseWheel = function(event) {
-    //move the square according to the vertical scroll amount
-    zoom += event.delta;
-    //uncomment to block page scrolling
-    return false;
-  };
-
-  p.lighting = function()  {
-    // function incase I want to animate lights
-    p.directionalLight(250, 250, 250, 1, 1, 0);
-    p.directionalLight(160, 160, 160, 1, -1, 1);
-    p.directionalLight(160, 160, 160, 0, 1, -1);
-  };
+  // end of sketch
 };
+
 /** Processing p5.js Sketch Definition          **/
 
 /* eslint-enable */
@@ -250,11 +261,12 @@ export default class Render {
     this.myp5.setResolution(options);
   };
   createGUI = () => {
+    const viewSize = window.innerWidth || document.documentElement.clientWidth;
     this.options = {
       iteration: 5,
-      strength: 50,
-      resolution: 25,
-      speed: 400,
+      strength: 60,
+      resolution: viewSize < 640 ? 60 : 35,
+      speed: 10,
       autoSpin: false,
       shaderType: 'java',
     };
@@ -270,12 +282,12 @@ export default class Render {
         this.options.strength = value;
         this.setOptions(this.options);
       });
-    folderRender.add(this.options, 'speed', 1, 1000).step(1)
+    folderRender.add(this.options, 'speed', 1, 100).step(1)
       .onFinishChange((value) => {
         this.options.speed = value;
         this.setOptions(this.options);
       });
-    folderRender.add(this.options, 'resolution', 20, 150).step(5)
+    folderRender.add(this.options, 'resolution', 30, 150).step(5)
       .onFinishChange((value) => {
         this.options.resolution = value;
         this.setResolution(this.options);

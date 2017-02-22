@@ -42,7 +42,9 @@ canvas {
 .dg.main:hover {
   opacity: 1;
 }
-
+.facebook {
+  background: url('../../resources/images/p5jsdemo.png');
+}
 @media only screen and (max-width: 980px) {
   canvas {
     width: 100% !important;
