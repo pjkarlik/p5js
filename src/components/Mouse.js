@@ -12,8 +12,8 @@ export default class Mouse {
     });
   }
   reset = () => {
-    this.x = -200;
-    this.y = -200;
+    this.x = ~~(document.documentElement.clientWidth, window.innerWidth || 0) / 2;
+    this.y = ~~(document.documentElement.clientHeight, window.innerHeight || 0) / 2;
   };
   logout = () => {
     this.events = ['mouseenter', 'mousemove'];

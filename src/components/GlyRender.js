@@ -8,6 +8,7 @@ import dat from 'dat-gui';
 const sketch = function (p) {
   var generator;
   generator = new Generator(10);
+  // setting screen vars
   var width = 640;
   var height = 640;
   var width_half = width / 2;
@@ -23,7 +24,7 @@ const sketch = function (p) {
   var speed = 10;
   var shaderType;
   var radius = 10;
-  var autoSpin = false;
+  // setting color vars
   var r = 0;
   var g = 0;
   var b = 0;
@@ -50,10 +51,12 @@ const sketch = function (p) {
 
   // p5.js setup function
   p.setup = function() {
-    p.createCanvas(640, 640, p.WEBGL)
-      .mousePressed(() => {isPressed = true;})
-      .mouseReleased(() => {isPressed = false;});
-    // above prevents clicks from happening outside of the canvas.
+    p.createCanvas(640, 640, p.WEBGL);
+    p.frameRate(60);
+      // above prevents clicks from happening outside of the canvas.
+      // .mousePressed(() => {isPressed = true;})
+      // .mouseReleased(() => {isPressed = false;});
+
     var fov = 60 / 180 * p.PI;
     var cameraZ = height_half / p.tan(fov/2.0);
     p.perspective(60 / 180 * p.PI, width/height, cameraZ * 0.1, cameraZ * 10);
@@ -62,11 +65,10 @@ const sketch = function (p) {
   };
 
   p.setOptions = function(options) {
-    iteration = (options.iteration / 100);
+    iteration = options.iteration / 100;
     shaderType = options.shaderType;
     speed = options.speed;
     strength = options.strength;
-    autoSpin = options.autoSpin;
   };
 
   p.setResolution = function(options) {
@@ -77,34 +79,40 @@ const sketch = function (p) {
       vertices[i] = new Array(spacing);
     }
   };
+
   p.draw = function() {
+    // advance time and tick draw loop for time segment
     var size = ~~(width / spacing);
+    var length = ~~(size * 1.25);
     spacer = spacer + speed;
-    if (spacer > ~~(size * 1.25)) {
-      // console.log(p.round(size * 1.25));
+    if (spacer > length) {
+      // the time phase of the noise wave moves
+      // once the cubes moved one space
       time += 1;
       spacer = 0;
     }
 
     p.generateMesh();
     p.viewPort();
+
     // move to center to start drawing grid
     p.translate(-width_half, -height, 200);
 
     for (var j = 0; j < spacing * 2; j++) {
       for (var i = 0; i < spacing; i++) {
-        // generate color values - I need I and J for iterations
-        var noise = ~~(vertices[i][j].n);
-        var noiseValue = 50 - (150 - noise) * 0.3;
-        var colorset = p.shader(noise, i, j);
-        if (noise > lastHigh && j % 20 == 0) {
-          lastHigh = noise;
+
+        // generate noise values and shader colors
+        // 50 - (150 - vertices[i][j].n) * 0.3;
+        var noiseValue = (vertices[i][j].n) * 0.3;
+        var colorset = p.shader(vertices[i][j].n, i, j);
+        if (vertices[i][j].n > lastHigh && j % 20 == 0) {
+          lastHigh = vertices[i][j].n;
         }
         // push and move 3D object into place
         p.push();
-        p.translate(i * size, j * ~~(size * 1.25) - spacer, -noiseValue * 2);
+        p.translate(i * size, j * length - spacer, -noiseValue * 2);
         p.ambientMaterial(colorset.r, colorset.g, colorset.b, colorset.op);
-        p.box(size, size * 1.25, 50);
+        p.box(size, length, 50);
         p.pop();
       }
     }
@@ -119,7 +127,7 @@ const sketch = function (p) {
           generator.simplex3(iteration * i,
             iteration * j + timeStop, (timeNoise * 0.0025) )
           ) * strength;
-        var zVector = nPoint * 5;
+        var zVector = nPoint * 10;
         vertices[i][j] = {
           n: zVector
         };
@@ -181,15 +189,29 @@ const sketch = function (p) {
 
   p.shader = function(noise, i, j){
     switch(shaderType) {
+      case 'java':
+        // java render color mode
+        r = Math.cos(noise * Math.PI / 180 + (time * 0.005)) * 255;
+        g = Math.sin(1 + noise * Math.PI / 180 - (time * 0.01)) * 255;
+        b = Math.cos(1 - noise * 2 * Math.PI / 180) * 255;
+        op = 255;
+        break;
       case 'octal':
         // octal render color mode - red and cyan
         const m = Math.cos(noise * Math.PI / 180);
         const o = Math.sin(noise * 4 * Math.PI / 180);
-        g = ~~(m * 155);
-        r = 255 - g;
+        r = ~~(m * 155);
         b = ~~(o * 255);
-        op = g;
+        g = 0;
+        op = 255;
   			break;
+      case 'offset':
+        // offset - three waves of render color
+        r = Math.cos(noise * 0.01 + (time * 0.001)) * 255;
+        g = Math.cos(noise * Math.PI / 180 + (time * 0.005)) * 255;
+        b = Math.sin(noise * Math.PI / 180 + (time * 0.01)) * 255;
+        op = 255;
+        break;
       case 'rainbow':
         // rainbow render color mode
         var mult = 0.004;
@@ -205,20 +227,7 @@ const sketch = function (p) {
         b = g;
         op = 255;
         break;
-      case 'offset':
-        // offset - three waves of render color
-        r = Math.cos(noise * Math.PI / 180 + (time * 0.001)) * 255;
-        g = Math.cos(noise * Math.PI / 180 + (time * 0.005)) * 255;
-        b = Math.sin(noise * Math.PI / 180 + (time * 0.01)) * 255;
-        op = 255;
-        break;
-      case 'java':
-        // java render color mode
-        r = Math.cos(noise * Math.PI / 180 + (time * 0.005)) * 255;
-        g = Math.sin(1 + noise * Math.PI / 180 - (time * 0.01)) * 255;
-        b = Math.cos(1 - noise * 2 * Math.PI / 180) * 255;
-        op = 255;
-        break;
+
       case 'default':
         // original render color mode
         r = 255 - Math.cos(noise * Math.PI / 180) * 255;
@@ -248,11 +257,11 @@ export default class Render {
     this.myp5 = undefined;
     // run function //
     this.setup();
-    this.createGUI();
   }
   /* eslint new-cap: 0 */
   setup = () => {
     this.myp5 = new p5(sketch, this.element);
+    this.createGUI();
   };
   setOptions = (options) => {
     this.myp5.setOptions(options);
@@ -264,11 +273,10 @@ export default class Render {
     const viewSize = window.innerWidth || document.documentElement.clientWidth;
     this.options = {
       iteration: 5,
-      strength: 60,
+      strength: 25,
       resolution: viewSize < 640 ? 60 : 35,
       speed: 10,
-      autoSpin: false,
-      shaderType: 'java',
+      shaderType: 'offset',
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');
@@ -277,7 +285,7 @@ export default class Render {
         this.options.iteration = value;
         this.setOptions(this.options);
       });
-    folderRender.add(this.options, 'strength', 1, 100).step(1)
+    folderRender.add(this.options, 'strength', 1, 50).step(1)
       .onFinishChange((value) => {
         this.options.strength = value;
         this.setOptions(this.options);
@@ -293,7 +301,7 @@ export default class Render {
         this.setResolution(this.options);
       });
     folderRender.add(this.options, 'shaderType',
-      ['default', 'java', 'octal', 'offset', 'rainbow', 'hashing'])
+      ['java', 'octal', 'offset', 'rainbow', 'hashing', 'default'])
       .onFinishChange((value) => {
         this.options.shaderType = value;
         this.setOptions(this.options);
