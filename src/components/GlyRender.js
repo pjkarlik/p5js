@@ -3,7 +3,7 @@ import p5 from 'p5';
 import { Generator } from './simplexNoise';
 import dat from 'dat-gui';
 
-/** Processing p5.js Sketch Definition          **/
+/** Processing p5.js Sketch Definition **/
 /* eslint-disable */
 const sketch = function (p) {
   var generator;
@@ -32,6 +32,7 @@ const sketch = function (p) {
   var colorset = [0, 0, 0];
   // setting items for movement
   var timeout = false;
+  var waveSpeed = 0.0005;
   var zOffset = 0;
   var offsetX = 0;
   var offsetY = 0;
@@ -69,6 +70,7 @@ const sketch = function (p) {
     shaderType = options.shaderType;
     speed = options.speed;
     strength = options.strength;
+    waveSpeed = options.waveSpeed / 10000;
   };
 
   p.setResolution = function(options) {
@@ -125,7 +127,7 @@ const sketch = function (p) {
       for (var i = 0; i < spacing; i++) {
         var nPoint = Math.abs(
           generator.simplex3(iteration * i,
-            iteration * j + timeStop, (timeNoise * 0.0025) )
+            iteration * j + timeStop, timeNoise * waveSpeed)
           ) * strength;
         var zVector = nPoint * 10;
         vertices[i][j] = {
@@ -154,14 +156,12 @@ const sketch = function (p) {
   };
 
   p.checkForChange = function() {
-    // tempX = isPressed ? p.mouseX : tempX;
-    // tempY = isPressed ? p.mouseY : tempY;
     if (p.random(1,255) > 252 && !timeout) {
       tempX = width_half - (width - p.random(1, width * 2));
       p.pauseChange();
     }
     if (p.random(1,255) > 250 && !timeout) {
-      tempY = height_half - (lastHigh / 8) - (60 - p.random(1, 120));
+      tempY = height_half - (lastHigh / 8) - (50 - p.random(1, 120));
       p.pauseChange();
     }
   };
@@ -207,7 +207,7 @@ const sketch = function (p) {
   			break;
       case 'offset':
         // offset - three waves of render color
-        r = Math.cos(noise * 0.01 + (time * 0.001)) * 255;
+        r = Math.cos(noise * 0.05 + (time * 0.002)) * 255;
         g = Math.cos(noise * Math.PI / 180 + (time * 0.005)) * 255;
         b = Math.sin(noise * Math.PI / 180 + (time * 0.01)) * 255;
         op = 255;
@@ -272,10 +272,11 @@ export default class Render {
   createGUI = () => {
     const viewSize = window.innerWidth || document.documentElement.clientWidth;
     this.options = {
-      iteration: 5,
-      strength: 25,
-      resolution: viewSize < 640 ? 60 : 35,
+      iteration: 4.5,
+      strength: 30,
+      resolution: viewSize < 640 ? 65 : 35,
       speed: 10,
+      waveSpeed: 25,
       shaderType: 'offset',
     };
     this.gui = new dat.GUI();
@@ -293,6 +294,11 @@ export default class Render {
     folderRender.add(this.options, 'speed', 1, 100).step(1)
       .onFinishChange((value) => {
         this.options.speed = value;
+        this.setOptions(this.options);
+      });
+    folderRender.add(this.options, 'waveSpeed', 1, 100).step(1)
+      .onFinishChange((value) => {
+        this.options.waveSpeed = value;
         this.setOptions(this.options);
       });
     folderRender.add(this.options, 'resolution', 30, 150).step(5)
