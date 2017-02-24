@@ -66,11 +66,12 @@ const sketch = function (p) {
   };
 
   p.setOptions = function(options) {
+    speed = options.speed / 10;
     iteration = options.iteration / 100;
-    shaderType = options.shaderType;
-    speed = options.speed;
-    strength = options.strength;
     waveSpeed = options.waveSpeed / 10000;
+
+    shaderType = options.shaderType;
+    strength = options.strength;
   };
 
   p.setResolution = function(options) {
@@ -102,9 +103,7 @@ const sketch = function (p) {
 
     for (var j = 0; j < spacing * 2; j++) {
       for (var i = 0; i < spacing; i++) {
-
         // generate noise values and shader colors
-        // 50 - (150 - vertices[i][j].n) * 0.3;
         var noiseValue = (vertices[i][j].n) * 0.3;
         var colorset = p.shader(vertices[i][j].n, i, j);
         if (vertices[i][j].n > lastHigh && j % 20 == 0) {
@@ -148,7 +147,7 @@ const sketch = function (p) {
   // set viewport, background, and lighting
     p.background(0,0,0);
     // move into position to draw grid
-    p.translate((width / 2) - (spacing * grid / 2), -200, zoom);
+    p.translate((width / 2) - (spacing * grid / 2), -100, zoom);
     p.checkForChange();
     p.moveVectors();
     p.rotateX(90 + camY);
@@ -161,7 +160,7 @@ const sketch = function (p) {
       p.pauseChange();
     }
     if (p.random(1,255) > 250 && !timeout) {
-      tempY = height_half - (lastHigh / 8) - (50 - p.random(1, 120));
+      tempY = height_half - (lastHigh / 8) - (55 - p.random(1, 120));
       p.pauseChange();
     }
   };
@@ -272,10 +271,10 @@ export default class Render {
   createGUI = () => {
     const viewSize = window.innerWidth || document.documentElement.clientWidth;
     this.options = {
-      iteration: 4.5,
-      strength: 30,
+      iteration: 3.5,
+      strength: 40,
       resolution: viewSize < 640 ? 65 : 35,
-      speed: 10,
+      speed: 200,
       waveSpeed: 25,
       shaderType: 'offset',
     };
@@ -291,7 +290,7 @@ export default class Render {
         this.options.strength = value;
         this.setOptions(this.options);
       });
-    folderRender.add(this.options, 'speed', 1, 100).step(1)
+    folderRender.add(this.options, 'speed', 1, 1000).step(1)
       .onFinishChange((value) => {
         this.options.speed = value;
         this.setOptions(this.options);
