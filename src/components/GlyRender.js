@@ -156,7 +156,7 @@ const sketch = function (p) {
 
   p.checkForChange = function() {
     if (p.random(1,255) > 252 && !timeout) {
-      tempX = width_half - (width - p.random(1, width * 2));
+      tempX = width_half - (width - p.random(1, width * 2)) * .8;
       p.pauseChange();
     }
     if (p.random(1,255) > 250 && !timeout) {
@@ -190,25 +190,33 @@ const sketch = function (p) {
     switch(shaderType) {
       case 'java':
         // java render color mode
-        r = Math.cos(noise * Math.PI / 180 + (time * 0.005)) * 255;
-        g = Math.sin(1 + noise * Math.PI / 180 - (time * 0.01)) * 255;
-        b = Math.cos(1 - noise * 2 * Math.PI / 180) * 255;
+        b = Math.cos(noise * Math.PI / 180 + (time * 0.2)) * 255;
+        r = 255 - b;
+        // Math.sin(1 + noise * Math.PI / 180 - (time * 0.01)) * 255;
+        g = Math.cos(2 - noise * 2 * Math.PI / 180) * 255;
+        op = 255;
+        break;
+      case 'larvel':
+        // original render color mode
+        r = Math.cos(noise * 1.5 * Math.PI / 180 - (time * 0.01)) * 255;
+        b = Math.sin(r * 0.15 * Math.PI / 180 + (time * 0.05)) * 255;
+        g = 255 - ~~(r * j * i) / 255;
         op = 255;
         break;
       case 'octal':
         // octal render color mode - red and cyan
         const m = Math.cos(noise * Math.PI / 180);
         const o = Math.sin(noise * 4 * Math.PI / 180);
-        r = ~~(m * 155);
-        b = ~~(o * 255);
+        r = ~~(m * 230);
+        b = ~~(o * 230);
         g = 0;
         op = 255;
   			break;
       case 'offset':
         // offset - three waves of render color
-        r = Math.cos(noise * 0.05 + (time * 0.002)) * 255;
-        g = Math.cos(noise * Math.PI / 180 + (time * 0.005)) * 255;
-        b = Math.sin(noise * Math.PI / 180 + (time * 0.01)) * 255;
+        b = Math.cos(noise * 3 * Math.PI / 180 + (j * 0.01)) * 255;
+        g = Math.sin(i *  Math.PI / grid + (time * 0.01)) * 255;
+        r = Math.cos(j * Math.PI / grid + (time * 0.009)) * 255;
         op = 255;
         break;
       case 'rainbow':
@@ -217,13 +225,13 @@ const sketch = function (p) {
         r = ~~(255 - 255 * (1 - Math.sin((noise * mult) * j)) / 2);
         g = ~~(255 - 255 * (1 + Math.cos((noise * mult) * i)) / 2);
         b = Math.cos(noise * 5 * Math.PI / 180 - (time * 0.03)) * 255;
-        op = Math.abs(((noise * 255) - 0.01) / (255 - 0.01));
+        op = Math.abs(((noise * 255) - 0) / (255 - 0)) / 2.5;
   			break;
       case 'hashing':
         // original render color mode
-        r = Math.cos(noise * 3 * Math.PI / 180 - (time * 0.01)) * 255;
-        g = r;
-        b = g;
+        r = Math.cos(noise * 2.5 * Math.PI / 180 - (time * 0.01)) * 255;
+        b = r;
+        g = b;
         op = 255;
         break;
 
@@ -274,9 +282,9 @@ export default class Render {
       iteration: 3.5,
       strength: 40,
       resolution: viewSize < 640 ? 65 : 35,
-      speed: 200,
-      waveSpeed: 25,
-      shaderType: 'offset',
+      speed: 160,
+      waveSpeed: 20,
+      shaderType: 'larvel',
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');
@@ -306,7 +314,7 @@ export default class Render {
         this.setResolution(this.options);
       });
     folderRender.add(this.options, 'shaderType',
-      ['java', 'octal', 'offset', 'rainbow', 'hashing', 'default'])
+      ['java', 'larvel', 'octal', 'offset', 'rainbow', 'hashing', 'default'])
       .onFinishChange((value) => {
         this.options.shaderType = value;
         this.setOptions(this.options);
