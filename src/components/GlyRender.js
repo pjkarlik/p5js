@@ -3,7 +3,10 @@ import p5 from 'p5';
 import { Generator } from './simplexNoise';
 import dat from 'dat-gui';
 
-/** Processing p5.js Sketch Definition **/
+/*
+ * Flyby Render - Illusion of motion and flying over a simplex landscape
+ */
+
 /* eslint-disable */
 const sketch = function (p) {
   var generator;
@@ -180,10 +183,9 @@ const sketch = function (p) {
   };
 
   p.lighting = function()  {
-    // function incase I want to animate lights
-    p.directionalLight(250, 250, 250, 1, 1, 0);
-    p.directionalLight(160, 160, 160, 1, -1, 1);
-    p.directionalLight(160, 160, 160, 0, 1, -1);
+    p.directionalLight(250, 250, 250, 255, 1, 0, -1);
+    p.directionalLight(160, 160, 160, 255, -1, 1, 0);
+    p.directionalLight(160, 160, 160, 255, 0, -1, 1);
   };
 
   p.shader = function(noise, i, j){

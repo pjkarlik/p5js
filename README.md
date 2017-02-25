@@ -6,12 +6,10 @@
 
   NEW: http://p5js-flyby.surge.sh/ Flyby Demo - put a nice song on and just watch!
   
-  AltRender - Grid system, defaults to boxes and offset color shader.
-
+  GlyRender - 3D Flyby demo - final render state.
   CbeRender - 3D Cub system, improving rendering and optimizations.
-
-  MtxRender - 3D Cube system, higher resolution settings can cause a slow down.
   ZrtRender - Grid system, block render method and opacity shaders.
+  AltRender - Grid system, defaults to boxes and offset color shader.
 
   Render - Original Render, initial framework with basic interaction.
 
