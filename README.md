@@ -4,12 +4,17 @@
   explores different features in rendering and shader functions. Using dat-gui
   to control display and render options.
 
-  NEW: http://p5js-flyby.surge.sh/ Flyby Demo - put a nice song on and just watch!
-  
-  GlyRender - 3D Flyby demo - final render state.
-  CbeRender - 3D Cub system, improving rendering and optimizations.
-  ZrtRender - Grid system, block render method and opacity shaders.
-  AltRender - Grid system, defaults to boxes and offset color shader.
+  * NEW: http://p5js-flyby.surge.sh/ Flyby Demo - put a nice song on and just watch!
+
+
+  * GlyRender - 3D Flyby demo - final render state.
+
+  * CbeRender - 3D Cub system, improving rendering and optimizations.
+
+  * ZrtRender - Grid system, block render method and opacity shaders.
+
+  * AltRender - Grid system, defaults to boxes and offset color shader.
+
 
   Render - Original Render, initial framework with basic interaction.
 
