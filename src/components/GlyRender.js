@@ -148,7 +148,7 @@ const sketch = function (p) {
 
   p.viewPort = function() {
   // set viewport, background, and lighting
-    p.background(0,0,0);
+    p.background(30,30,30);
     // move into position to draw grid
     p.translate((width / 2) - (spacing * grid / 2), -100, zoom);
     p.checkForChange();
@@ -286,7 +286,7 @@ export default class Render {
       resolution: viewSize < 640 ? 65 : 35,
       speed: 160,
       waveSpeed: 20,
-      shaderType: 'larvel',
+      shaderType: 'hashing',
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');
