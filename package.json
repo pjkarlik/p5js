@@ -46,7 +46,16 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.2",
+    "babel-plugin-transform-proto-to-assign": "^6.23.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.23.0",
     "dat-gui": "^0.5.0",
-    "p5": "^0.5.6"
+    "ejs": "^2.5.6",
+    "eslint-loader": "^1.6.3",
+    "p5": "^0.5.7",
+    "style-loader": "^0.13.2",
+    "url-loader": "^0.5.8"
   }
 }
