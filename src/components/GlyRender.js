@@ -26,6 +26,7 @@ const sketch = function (p) {
   var strength;
   var speed = 10;
   var shaderType;
+  var objectType;
   var radius = 10;
   // setting color vars
   var r = 0;
@@ -57,9 +58,6 @@ const sketch = function (p) {
   p.setup = function() {
     p.createCanvas(640, 640, p.WEBGL);
     p.frameRate(60);
-      // above prevents clicks from happening outside of the canvas.
-      // .mousePressed(() => {isPressed = true;})
-      // .mouseReleased(() => {isPressed = false;});
 
     var fov = 60 / 180 * p.PI;
     var cameraZ = height_half / p.tan(fov/2.0);
@@ -72,7 +70,7 @@ const sketch = function (p) {
     speed = options.speed / 10;
     iteration = options.iteration / 100;
     waveSpeed = options.waveSpeed / 10000;
-
+    objectType = options.objectType;
     shaderType = options.shaderType;
     strength = options.strength;
   };
@@ -109,14 +107,28 @@ const sketch = function (p) {
         // generate noise values and shader colors
         var noiseValue = (vertices[i][j].n) * 0.3;
         var colorset = p.shader(vertices[i][j].n, i, j);
-        if (vertices[i][j].n > lastHigh && j % 20 == 0) {
+        if (j % 20 == 0 && i == spacing / 2) {
           lastHigh = vertices[i][j].n;
         }
         // push and move 3D object into place
         p.push();
         p.translate(i * size, j * length - spacer, -noiseValue * 2);
         p.ambientMaterial(colorset.r, colorset.g, colorset.b, colorset.op);
-        p.box(size, length, 50);
+        switch (objectType) {
+          case 'plane':
+            p.plane(size,length);
+            break;
+          case 'box':
+            p.box(size, length, length);
+            break;
+          case 'sphere':
+            var sphereSize = 1 + ~~(noiseValue / 4);
+            p.sphere(sphereSize, 10);
+            break;
+          default:
+            p.plane(size,length);
+            break;
+        }
         p.pop();
       }
     }
@@ -194,7 +206,6 @@ const sketch = function (p) {
         // java render color mode
         b = Math.cos(noise * Math.PI / 180 + (time * 0.2)) * 255;
         r = 255 - b;
-        // Math.sin(1 + noise * Math.PI / 180 - (time * 0.01)) * 255;
         g = Math.cos(2 - noise * 2 * Math.PI / 180) * 255;
         op = 255;
         break;
@@ -220,7 +231,7 @@ const sketch = function (p) {
         g = Math.sin(i *  Math.PI / grid + (time * 0.01)) * 255;
         r = Math.cos(j * Math.PI / grid + (time * 0.009)) * 255;
         op = 255;
-        break;
+        break; v09
       case 'rainbow':
         // rainbow render color mode
         var mult = 0.004;
@@ -282,11 +293,12 @@ export default class Render {
     const viewSize = window.innerWidth || document.documentElement.clientWidth;
     this.options = {
       iteration: 3.5,
-      strength: 40,
+      strength: 23,
       resolution: viewSize < 640 ? 65 : 35,
-      speed: 160,
-      waveSpeed: 20,
-      shaderType: 'hashing',
+      speed: 67,
+      waveSpeed: 35,
+      shaderType: 'java',
+      objectType: 'box',
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');
@@ -319,6 +331,12 @@ export default class Render {
       ['java', 'larvel', 'octal', 'offset', 'rainbow', 'hashing', 'default'])
       .onFinishChange((value) => {
         this.options.shaderType = value;
+        this.setOptions(this.options);
+      });
+    folderRender.add(this.options, 'objectType',
+      ['plane', 'box', 'sphere'])
+      .onFinishChange((value) => {
+        this.options.objectType = value;
         this.setOptions(this.options);
       });
     folderRender.open();

@@ -21,13 +21,15 @@ const sketch = function (p) {
   var timeNoise = 0;
   var iteration = 0.075;
   var strength = 25;
-  var shaderType = 'octal';
-  var waveSpeed = 20;
+  var shaderType;
+  var objectType;
+  var waveSpeed = 0.0005;
   var autoSpin = false;
   var r = 0;
   var g = 0;
   var b = 0;
   var colorset = [0, 0, 0];
+  var op = 255;
   // setting items for movement
   var offsetX = 0;
   var offsetY = 0;
@@ -61,6 +63,7 @@ const sketch = function (p) {
   p.setOptions = function(options) {
     iteration = options.iteration / 100;
     waveSpeed = options.waveSpeed / 10000;
+    objectType = options.objectType;
     shaderType = options.shaderType;
     strength = options.strength;
     autoSpin = options.autoSpin;
@@ -88,12 +91,24 @@ const sketch = function (p) {
       for (var i = 0; i < spacing; i++) {
         var noiseValue = (vertices[i][j].n) * 0.3;
         var colorset = p.shader(vertices[i][j].n, i, j);
-        var opacity = p.abs(((vertices[i][j].n * 255) - 0) / (255 - 0));
-
         p.push();
         p.translate(i * size, j * size, -noiseValue * 2);
-        p.ambientMaterial(colorset.r, colorset.g, colorset.b, opacity);
-        p.box(size, size, size);
+        p.ambientMaterial(colorset.r, colorset.g, colorset.b, colorset.op);
+        switch (objectType) {
+          case 'plane':
+            p.plane(size,length);
+            break;
+          case 'box':
+            p.box(size, length, length);
+            break;
+          case 'sphere':
+            var sphereSize = 1 + ~~(noiseValue / 4);
+            p.sphere(sphereSize, 10);
+            break;
+          default:
+            p.plane(size,length);
+            break;
+        }
         p.pop();
 
       }
@@ -117,63 +132,6 @@ const sketch = function (p) {
     }
   };
 
-  p.shader = function(noise, i, j){
-    switch(shaderType) {
-		case 'octal':
-      // octal render color mode - red and cyan
-      const m = Math.cos(noise * .055);
-      const o = Math.sin(noise * .055);
-      r = ~~(m * 255);
-      b = ~~(o * 355);
-      g = b;
-			break;
-    case 'rainbow':
-      // rainbow render color mode
-      var mult = 0.004;
-      r = ~~(255 - 255 * (1 - Math.sin((noise * mult) * j)) / 2);
-      g = ~~(255 - 255 * (1 + Math.cos((noise * mult) * i)) / 2);
-      b = ~~(255 - 255 * (1 - Math.sin((noise * mult) * i)) / 2);
-			break;
-    case 'hashing':
-      // original render color mode
-      r = Math.cos(noise * 5 * Math.PI /180 - (time * 0.03)) * 255;
-      g = r;
-      b = g;
-      break;
-    case 'offset':
-      // offset - three waves of render color
-      var mult = 0.001;
-      r = Math.cos(noise * 0.05 + (time * 0.01)) * 255;
-      g = Math.cos(noise * 0.05 + (time * 0.02)) * 255;
-      b = Math.sin(noise * 0.05 + (time * 0.03)) * 255;
-      break;
-    case 'java':
-      // java render color mode
-      b = Math.cos(noise * Math.PI / 180 + (time * 0.2)) * 255;
-      r = 255 - b;
-      // Math.sin(1 + noise * Math.PI / 180 - (time * 0.01)) * 255;
-      g = Math.cos(2 - noise * 2 * Math.PI / 180) * 255;
-      break;
-    case 'larvel':
-      // original render color mode
-      r = Math.cos(noise * 1.5 * Math.PI / 180 - (time * 0.01)) * 255;
-      b = Math.sin(r * 0.15 * Math.PI / 180 + (time * 0.05)) * 255;
-      g = 255 - ~~(r * j * i) / 255;
-      break;
-    case 'default':
-      // original render color mode
-      r = 195;
-      g = r;
-      b = g;
-      break;
-    }
-    return {
-      r,
-      g,
-      b
-    };
-  };
-
   p.viewPort = function() {
   // set viewport, background, and lighting
     p.background(20,20,20);
@@ -195,13 +153,79 @@ const sketch = function (p) {
     zoom += event.delta;
     //uncomment to block page scrolling
     return false;
-  }
+  };
 
   p.lighting = function()  {
     p.directionalLight(250, 250, 250, 255, 1, 0, -1);
     p.directionalLight(160, 160, 160, 255, -1, 1, 0);
     p.directionalLight(160, 160, 160, 255, 0, -1, 1);
   };
+
+  p.shader = function(noise, i, j){
+    const timeStop = time * 0.1;
+    switch(shaderType) {
+      case 'java':
+        // java render color mode
+        b = Math.cos(noise * Math.PI / 180 + (timeStop * 0.2)) * 255;
+        r = Math.cos(noise * 2 * Math.PI / 180) * 255;
+        g = 255 - (b);
+        op = 255;
+        break;
+      case 'larvel':
+        // original render color mode
+        r = Math.cos(noise * 1.5 * Math.PI / 180 - (timeStop * 0.01)) * 255;
+        b = Math.sin(r * 0.15 * Math.PI / 180 + (timeStop * 0.05)) * 255;
+        g = 255 - ~~(r * j * i) / 255;
+        op = 255;
+        break;
+      case 'octal':
+        // octal render color mode - red and cyan
+        const m = Math.cos(noise * Math.PI / 180);
+        const o = Math.sin(noise * 4 * Math.PI / 180);
+        r = ~~(m * 230);
+        b = ~~(o * 230);
+        g = 0;
+        op = 255;
+  			break;
+      case 'offset':
+        // offset - three waves of render color
+        b = Math.cos(noise * 3 * Math.PI / 180 + (j * 0.01)) * 255;
+        g = Math.sin(i *  Math.PI / grid + (timeStop * 0.01)) * 255;
+        r = Math.cos(j * Math.PI / grid + (timeStop * 0.009)) * 255;
+        op = 255;
+        break;
+      case 'rainbow':
+        // rainbow render color mode
+        var mult = 0.004;
+        r = ~~(255 - 255 * (1 - Math.sin((noise * mult) * j)) / 2);
+        g = ~~(255 - 255 * (1 + Math.cos((noise * mult) * i)) / 2);
+        b = Math.cos(noise * 5 * Math.PI / 180 - (timeStop * 0.03)) * 255;
+        op = Math.abs(((noise * 255) - 0) / (255 - 0)) / 2.5;
+  			break;
+      case 'hashing':
+        // original render color mode
+        r = Math.cos(noise * 2.5 * Math.PI / 180 - (timeStop * 0.01)) * 255;
+        b = r;
+        g = b;
+        op = 255;
+        break;
+
+      case 'default':
+        // original render color mode
+        r = 255 - Math.cos(noise * Math.PI / 180) * 255;
+        g = r;
+        b = g;
+        op = r;
+        break;
+      }
+    return {
+      r,
+      g,
+      b,
+      op
+    };
+  };
+  // end of sketch
 };
 /** Processing p5.js Sketch Definition          **/
 
@@ -214,11 +238,11 @@ export default class Render {
     this.myp5 = undefined;
     // run function //
     this.setup();
-    this.createGUI();
   }
   /* eslint new-cap: 0 */
   setup = () => {
     this.myp5 = new p5(sketch, this.element);
+    this.createGUI();
   };
   setOptions = (options) => {
     this.myp5.setOptions(options);
@@ -229,11 +253,13 @@ export default class Render {
   createGUI = () => {
     const viewSize = window.innerWidth || document.documentElement.clientWidth;
     this.options = {
-      iteration: 3,
-      strength: 30,
-      resolution: viewSize < 640 ? 65 : 25,
-      waveSpeed: 20,
-      shaderType: 'larvel',
+      iteration: 3.5,
+      strength: 23,
+      resolution: viewSize < 640 ? 65 : 20,
+      speed: 67,
+      waveSpeed: 35,
+      shaderType: 'java',
+      objectType: 'box',
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');
@@ -252,7 +278,7 @@ export default class Render {
         this.options.waveSpeed = value;
         this.setOptions(this.options);
       });
-    folderRender.add(this.options, 'resolution', 15, 150).step(5)
+    folderRender.add(this.options, 'resolution', 20, 150).step(5)
       .onFinishChange((value) => {
         this.options.resolution = value;
         this.setResolution(this.options);
@@ -261,6 +287,12 @@ export default class Render {
       ['java', 'larvel', 'octal', 'offset', 'rainbow', 'hashing', 'default'])
       .onFinishChange((value) => {
         this.options.shaderType = value;
+        this.setOptions(this.options);
+      });
+    folderRender.add(this.options, 'objectType',
+      ['plane', 'box', 'sphere'])
+      .onFinishChange((value) => {
+        this.options.objectType = value;
         this.setOptions(this.options);
       });
     folderRender.open();

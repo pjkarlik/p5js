@@ -1,4 +1,3 @@
-
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
@@ -12,6 +11,7 @@ const config = {
   target: 'web',
   devServer: {
     host: '0.0.0.0',
+    port: '2020',
     historyApiFallback: true,
   },
   devtool: 'source-map',
