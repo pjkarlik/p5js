@@ -1,4 +1,4 @@
-import Render from './components/QuadRender';
+import Render from './components/CrkRender';
 import { description, version } from '../version.json';
 require('../resources/styles/styles.css');
 

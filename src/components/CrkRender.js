@@ -61,11 +61,6 @@ const sketch = function (p) {
   p.draw = function() {
     p.viewPort();
     p.drawGrid();
-    tick++;
-    if (tick > 2 ) {
-      p.checkMouse();
-      tick =0;
-    }
   };
 
   p.drawGrid = function() {
@@ -80,34 +75,31 @@ const sketch = function (p) {
         var boxColor = 1 + Math.cos(255 * Math.PI / 180 + gameTime) * 255;
         const xoffset = (x * xgrid);
         const yoffset = (y * xgrid);
-
-        if(x < grid && y != 0) {
-          p.stroke(x * 45, y * 45, 255 );
+        p.stroke(x * 40, y * 40, 255 );
+        if ( (x * y) % 2 === 0 ) {
           p.line(
             (startX + xoffset) + tempX, (startY + yoffset) + tempY,
             (startX + xoffset) + xgrid - tempX, (startY + yoffset) + tempY
           );
-          p.stroke(155, x * 45, y * 45 );
+
           p.line(
             (startX + xoffset) + xgrid - tempX, (startY + yoffset) + tempY,
-            (startX + xoffset) - tempX, (startY + yoffset) - tempY
+            (startX + xoffset) + xgrid - tempX, (startY + yoffset) + xgrid + tempY
           );
-        }
-
-        if(y < gridY + 1 && x != 0) {
-          p.stroke(x * 45, 55, y * 45 );
           p.line(
-            (startX + xoffset) + tempX, (startY + yoffset) - tempY,
-            (startX + xoffset), (startY + yoffset) + xgrid + tempY
+            (startX + xoffset) + xgrid - tempX, (startY + yoffset) + xgrid + tempY,
+            (startX + xoffset) + tempX, (startY + yoffset) + xgrid + tempY
+          );
+
+          p.line(
+            (startX + xoffset) + tempX, (startY + yoffset) + xgrid + tempY,
+            (startX + xoffset) + tempX, (startY + yoffset) + tempY
           );
         }
+        p.translate(width_half, height_half);
+        p.rotate(tempY * 0.0001);
+        p.translate(-width_half, -height_half);
 
-        if (x === mouseX && y === mouseY ) {
-          // p.stroke(180, 0, 0);
-          p.fill(boxColor, x * y * 55, 255 - boxColor);
-          p.noStroke();
-          p.rect((mouseX * xgrid), (mouseY * xgrid), xgrid, xgrid);
-        }
       }
     }
   }
