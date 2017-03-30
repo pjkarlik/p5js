@@ -13,32 +13,37 @@ const sketch = function (p) {
   var width_half = width / 2;
   var height_half = height / 2;
 
-  var grid = width > 800 ? 10 : 5;
-  var xgrid = width / grid;
+  var grid;
+  var xgrid;
+  var gridY;
+  var multX;
+  var multY;
+  var speed;
+  var gameTime = .05;
 
-  var gridY = (height / xgrid) + 1;
-
-  var multX = 1;
-  var multY = 1;
   var mouseX = 0;
   var mouseY = 0;
-  // setting items for render
+
   var tick = 0;
   var time = 0;
+
   // p5.js setup function
   p.setup = function() {
     p.createCanvas(width, height);
     p.stroke(255);
     p.frameRate(30);
   };
+
   p.setOptions = function(options) {
     multX = options.multX || multX;
     multY = options.multY || multY;
+    speed = (options.speed) * .001 || speed;
   }
+
   p.setResolution = function(options) {
-    grid = width > 800 ? options.resolution || grid : options.resolution / 2 || grid;
-    xgrid = (width / grid);
-    gridY = (height / xgrid);
+    grid = options.resolution || grid;
+    xgrid = ~~(width / grid);
+    gridY = ~~(height / xgrid);
   };
 
   p.windowResized = function() {
@@ -47,9 +52,8 @@ const sketch = function (p) {
     height = p.windowHeight;
     width_half = width / 2;
     height_half = height / 2;
-    grid = width > 800 ? 10 : 5;
-    xgrid = (width / grid);
-    gridY = (height / xgrid);
+    xgrid = ~~(width / grid);
+    gridY = ~~(height / xgrid);
     // Resize canvas element //
     p.resizeCanvas(width, height);
   }
@@ -67,27 +71,41 @@ const sketch = function (p) {
   p.drawGrid = function() {
     var startX = 0;
     var startY = 0;
-    time += 0.05;
+    time += 1;
+    gameTime = time * speed;
     for (var y = 0; y < gridY + 1; y++ ){
-      for (var x = 0; x < grid + 1; x++ ){
-        var tempX = 50 * Math.sin((x * 20) * Math.PI / 180 + time) * multX;
-        var tempY = 50 * Math.cos((x * 20) * Math.PI / 180 + time) * multY;
-        p.stroke(0, 0, 100 + p.random(5, 80));
+      for (var x = 0; x < grid + 1 ; x++ ){
+        var tempX = 50 * Math.sin((x * 20) * Math.PI / 180 + gameTime) * multX;
+        var tempY = 50 * Math.cos((y * 20) * Math.PI / 180 + gameTime) * multY;
+        var boxColor = 1 + Math.cos(255 * Math.PI / 180 + gameTime) * 255;
+        const xoffset = (x * xgrid);
+        const yoffset = (y * xgrid);
+
         if(x < grid && y != 0) {
-          p.line(startX + (x * xgrid) + tempX, startY + (y * xgrid) + tempY,
-            startX + (x * xgrid) + xgrid - tempX, startY + (y * xgrid) + tempY);
-          p.stroke(100 + p.random(5, 80), 0, 0);
-          p.line(startX + (x * xgrid) + xgrid - tempX, startY + (y * xgrid) + tempY,
-            startX + (x * xgrid) - tempX, startY + (y * xgrid) - tempY);
+          p.stroke(x * 45, y * 45, 255 );
+          p.line(
+            (startX + xoffset) + tempX, (startY + yoffset) + tempY,
+            (startX + xoffset) + xgrid - tempX, (startY + yoffset) + tempY
+          );
+          p.stroke(155, x * 45, y * 45 );
+          p.line(
+            (startX + xoffset) + xgrid - tempX, (startY + yoffset) + tempY,
+            (startX + xoffset) - tempX, (startY + yoffset) - tempY
+          );
         }
-        p.stroke(0, 0, 100 + p.random(5, 80));
+
         if(y < gridY + 1 && x != 0) {
-          p.line(startX + (x * xgrid) + tempX, startY + (y * xgrid) - tempY,
-            startX + (x * xgrid), startY + (y * xgrid) + xgrid + tempY);
+          p.stroke(x * 45, 55, y * 45 );
+          p.line(
+            (startX + xoffset) + tempX, (startY + yoffset) - tempY,
+            (startX + xoffset), (startY + yoffset) + xgrid + tempY
+          );
         }
-        if (x === mouseX && y === mouseX ) {
-          p.stroke(180, 0, 0);
-          p.fill(180, 0, 0, 0.8);
+
+        if (x === mouseX && y === mouseY ) {
+          // p.stroke(180, 0, 0);
+          p.fill(boxColor, x * y * 55, 255 - boxColor);
+          p.noStroke();
           p.rect((mouseX * xgrid), (mouseY * xgrid), xgrid, xgrid);
         }
       }
@@ -100,8 +118,8 @@ const sketch = function (p) {
   }
 
   p.viewPort = function() {
-    // p.blendMode(p.DIFFERENCE);
-    p.background(0,0,10);
+    p.blendMode(p.DIFFERENCE);
+    p.background(0,0,20);
   }
 
   // end of sketch
@@ -133,13 +151,14 @@ export default class Render {
     const viewSize = window.innerWidth || document.documentElement.clientWidth;
     this.options = {
       resolution: viewSize > 800 ? 10 : 5,
-      multX: 1,
-      multY: 1,
+      multX: 2,
+      multY: 1.5,
+      speed: 50,
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');
 
-    folderRender.add(this.options, 'resolution', 5, 20).step(1)
+    folderRender.add(this.options, 'resolution', 2, 30).step(1)
       .onFinishChange((value) => {
         this.options.resolution = value;
         this.setResolution(this.options);
@@ -154,9 +173,15 @@ export default class Render {
         this.options.multY = value;
         this.setOptions(this.options);
       });
+    folderRender.add(this.options, 'speed', 0, 100).step(1)
+      .onFinishChange((value) => {
+        this.options.speed = value;
+        this.setOptions(this.options);
+      });
     folderRender.open();
 
     // this.setOptions(this.options);
+    this.setOptions(this.options);
     this.setResolution(this.options);
   };
 }
