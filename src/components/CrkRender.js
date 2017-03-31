@@ -76,7 +76,7 @@ const sketch = function (p) {
         const xoffset = (x * xgrid);
         const yoffset = (y * xgrid);
         p.stroke(x * 40, y * 40, 255 );
-        if ( (x * y) % 2 === 0 ) {
+        if ((x % 2 === 0) && (y % 2 === 0)) {
           p.line(
             (startX + xoffset) + tempX, (startY + yoffset) + tempY,
             (startX + xoffset) + xgrid - tempX, (startY + yoffset) + tempY

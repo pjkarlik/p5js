@@ -1,4 +1,4 @@
-import Render from './components/CrkRender';
+import Render from './components/VrtRender';
 import { description, version } from '../version.json';
 require('../resources/styles/styles.css');
 

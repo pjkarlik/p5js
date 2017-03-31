@@ -71,6 +71,7 @@ const sketch = function (p) {
   p.drawGrid = function() {
     var startX = 0;
     var startY = 0;
+    var cdfx = 255 / grid;
     time += 1;
     gameTime = time * speed;
     for (var y = 0; y < gridY + 1; y++ ){
@@ -82,12 +83,12 @@ const sketch = function (p) {
         const yoffset = (y * xgrid);
 
         if(x < grid && y != 0) {
-          p.stroke(x * 45, y * 45, 255 );
+          p.stroke(255 - (x * cdfx), y * cdfx, 255 );
           p.line(
             (startX + xoffset) + tempX, (startY + yoffset) + tempY,
             (startX + xoffset) + xgrid - tempX, (startY + yoffset) + tempY
           );
-          p.stroke(155, x * 45, y * 45 );
+          p.stroke(0, x * cdfx, y * cdfx );
           p.line(
             (startX + xoffset) + xgrid - tempX, (startY + yoffset) + tempY,
             (startX + xoffset) - tempX, (startY + yoffset) - tempY
@@ -95,7 +96,7 @@ const sketch = function (p) {
         }
 
         if(y < gridY + 1 && x != 0) {
-          p.stroke(x * 45, 55, y * 45 );
+          p.stroke(255 - (x * cdfx), 0, y * cdfx );
           p.line(
             (startX + xoffset) + tempX, (startY + yoffset) - tempY,
             (startX + xoffset), (startY + yoffset) + xgrid + tempY
@@ -103,10 +104,11 @@ const sketch = function (p) {
         }
 
         if (x === mouseX && y === mouseY ) {
-          // p.stroke(180, 0, 0);
-          p.fill(boxColor, x * y * 55, 255 - boxColor);
+          p.blendMode(p.OVERLAY);
+          p.fill(boxColor, (x * cdfx) * 2, (y * cdfx) * 2);
           p.noStroke();
           p.rect((mouseX * xgrid), (mouseY * xgrid), xgrid, xgrid);
+          p.blendMode(p.NORMAL);
         }
       }
     }
@@ -118,7 +120,7 @@ const sketch = function (p) {
   }
 
   p.viewPort = function() {
-    p.background(0,0,20);
+    p.background(20,20,40);
   }
 
   // end of sketch
