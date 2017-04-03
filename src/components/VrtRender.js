@@ -57,6 +57,7 @@ const sketch = function (p) {
     // var ang1 = p.TWO_PI * p.noise(0.01*p.frameCount + 10);
     // var ang2 = p.TWO_PI * p.noise(0.01*p.frameCount + 20);
     var ang3 = (0.01*p.frameCount + 30);
+    var ang2 = (0.01*p.frameCount);
     var rx = 255 * Math.cos(p.frameCount*0.7 * p.PI / 360);
     var tx = 255 * Math.sin(p.frameCount * p.PI / 360);
     var dx = 100 * Math.sin(p.frameCount*0.5 * p.PI / 360);
@@ -86,11 +87,11 @@ const sketch = function (p) {
         p.fill(color2,100,100);
         p.ellipse(0, 0, size/2, size/2);
         p.translate(size/2, size/2);
-        p.rotate(ang3 * 2);
+        p.rotate(ang2 * 2);
         for (var c = 0; c < amountC; c++) {
           p.push();
           p.rotate(p.TWO_PI * c / amountC);
-          p.translate(dx, -size/6);
+          p.translate(dx, tx);
           p.fill(color - c * 10 ,100,100);
           p.ellipse(0, 0, size/3, size/3);
           p.pop();
@@ -107,7 +108,7 @@ const sketch = function (p) {
   }
 
   p.viewPort = function() {
-    p.background(0,0,10,1);
+    p.background(0,0,0,10);
   }
 
 };
