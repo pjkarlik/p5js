@@ -1,4 +1,4 @@
-import Render from './components/GlyRender';
+import Render from './components/QuadRender';
 import { description, version } from '../version.json';
 require('../resources/styles/styles.css');
 
