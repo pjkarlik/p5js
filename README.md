@@ -3,10 +3,6 @@
 
 -[travis-ci build](https://travis-ci.org/pjkarlik/p5js)
 
-
-  Current Mapping --> ```index.js``` --> (render file) ```GlyRender.js``` (or just about any other file in src)
-
-
 # p5js Demo
   My Experiments with p5js using simplex noise on 3d grids and matrix systems.
   You can change the render file called in index.js, each variation
@@ -23,6 +19,9 @@
   * ZrtRender - Grid system, block render method and opacity shaders.
 
   * AltRender - Grid system, defaults to boxes and offset color shader.
+
+
+  Current Mapping --> ```index.js``` --> (render file) ```GlyRender.js``` (or just about any other file in src)
 
 
   Render - Original Render, initial framework with basic interaction.
