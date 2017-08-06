@@ -3,9 +3,9 @@
 
 -[travis-ci build](https://travis-ci.org/pjkarlik/p5js)
 
-```
+
   Current Mapping --> ```index.js``` --> (render file) ```GlyRender.js``` (or just about any other file in src)
-```
+
 
 # p5js Demo
   My Experiments with p5js using simplex noise on 3d grids and matrix systems.
