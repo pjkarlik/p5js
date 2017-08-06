@@ -298,7 +298,7 @@ export default class Render {
       speed: 67,
       waveSpeed: 35,
       shaderType: 'java',
-      objectType: 'box',
+      objectType: 'box'
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');

@@ -1,0 +1,15 @@
+language: node_js
+
+node_js:
+  - "8.0"
+
+script:
+  - rm -rf dist
+  - npm run webpack
+
+deploy:
+  provider: surge
+  project: ./dist/
+  domain: p5js-flybydemo.surge.sh
+
+  skip_cleanup: true
