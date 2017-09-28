@@ -258,7 +258,7 @@ export default class Render {
       resolution: 25,
       speed: 400,
       autoSpin: false,
-      shaderType: 'java',
+      shaderType: 'java'
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');

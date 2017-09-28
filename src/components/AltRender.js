@@ -243,7 +243,7 @@ export default class Render {
       resolution: 30,
       autoSpin: true,
       shaderType: 'larvel',
-      objectType: 'sphere',
+      objectType: 'sphere'
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');

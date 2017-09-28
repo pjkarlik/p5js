@@ -39,7 +39,7 @@
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-dependencies": "^2.2.0",
     "eslint-plugin-import": "^2.2.0",
-    "extract-text-webpack-plugin": "^2.1.2",
+    "extract-text-webpack-plugin": "^3.0.0",
     "fb-watchman": "^2.0.0",
     "file-loader": "^0.11.2",
     "highlight-loader": "^0.7.2",
@@ -51,15 +51,15 @@
     "less": "^2.7.2",
     "less-loader": "^4.0.4",
     "node-libs-browser": "^0.5.3",
-    "p5": "^0.5.11",
+    "p5": "^0.5.13",
     "postcss-color-rebeccapurple": "^3.0.0",
     "postcss-loader": "^2.0.6",
     "prop-types": "^15.5.8",
     "raw-loader": "^0.5.1",
     "style-loader": "^0.18.1",
     "url-loader": "^0.5.7",
-    "webpack": "^2.6.1",
-    "webpack-dev-server": "^2.4.5",
-    "webpack-sources": "^0.1.1"
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.8.2",
+    "webpack-sources": "^1.0.1"
   }
 }

@@ -144,7 +144,7 @@ export default class Render {
       resolution: viewSize > 800 ? 10 : 5,
       multX: 2,
       multY: 1.5,
-      speed: 50,
+      speed: 50
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');

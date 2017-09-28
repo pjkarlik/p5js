@@ -187,21 +187,21 @@ export default class Render {
     this.options = {
       iteration: 5,
       strength: 25,
-      shaderType: 'offset',
+      shaderType: 'offset'
     };
     this.gui = new dat.GUI();
     const folderRender = this.gui.addFolder('Render Options');
     folderRender.add(this.options, 'iteration', 0, 10).step(0.1)
       .onFinishChange((value) => {
         this.options = {
-          iteration: value,
+          iteration: value
         };
         this.setOptions(this.options);
       });
     folderRender.add(this.options, 'strength', 0, 100).step(1)
       .onFinishChange((value) => {
         this.options = {
-          strength: value,
+          strength: value
         };
         this.setOptions(this.options);
       });
@@ -209,7 +209,7 @@ export default class Render {
       ['default', 'octal', 'offset', 'rainbow', 'hashing'])
       .onFinishChange((value) => {
         this.options = {
-          shaderType: value,
+          shaderType: value
         };
         this.setOptions(this.options);
       });
