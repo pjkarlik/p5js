@@ -1,7 +1,7 @@
 
 import p5 from 'p5';
-import { Generator } from './simplexNoise';
-import dat from 'dat-gui';
+import { Generator } from '../components/simplexNoise';
+import dat from 'dat.gui';
 
 /** Processing p5.js Sketch Definition          **/
 /* eslint-disable */
@@ -31,6 +31,11 @@ const sketch = function (p) {
   var zoom = -150;
   var camX = width_half;
   var camY = height_half;
+  var tempX = width_half;
+  var tempY = height_half;
+  var thisX = width_half;
+  var thisY = height_half;
+  var isPressed = false;
   // building arrays
   var vertices = new Array(spacing);
   for (var i = 0; i < spacing; i++) {
@@ -39,7 +44,9 @@ const sketch = function (p) {
 
   // p5.js setup function
   p.setup = function() {
-    p.createCanvas(640, 640, p.WEBGL);
+    p.createCanvas(640, 640, p.WEBGL)
+    .mousePressed(() => {isPressed = true;})
+    .mouseReleased(() => {isPressed = false;});
     var fov = 60 / 180 * p.PI;
     var cameraZ = height_half / p.tan(fov/2.0);
     p.perspective(60 / 180 * p.PI, width/height, cameraZ * 0.1, cameraZ * 10);
@@ -65,6 +72,7 @@ const sketch = function (p) {
         var vertZ = p.shader(vertices[i][j].z, i, j);
         colorset = [vertZ.r, vertZ.g, vertZ.b];
         // push and move 3D object into place
+        p.noStroke();
         p.push();
         p.translate(vertices[i][j].x, vertices[i][j].y, vertices[i][j].z);
         p.specularMaterial(colorset);
@@ -119,18 +127,21 @@ const sketch = function (p) {
   };
 
   p.viewPort = function() {
-  // set viewport, background, and lighting
-    p.background(0,0,0);
+    // set viewport, background, and lighting
+    p.background(20,20,20);
     // move into position to draw grid
     p.translate((width / 2) - (spacing * grid / 2), 0, zoom);
     // If mouse is inactive pick the center of the screen
-    var tempX = p.mouseX || 0; // width/2; alt version but this looks better
-    var tempY = p.mouseY || height_half;
-    camX = (width_half - tempX) * 0.003; // (p.frameCount * 0.001);
-    camY = (height_half - tempY)* 0.005; // (height / 2);
-    p.rotateX(90 - camY);
-    p.rotateZ(45 - camX);
+    tempX = isPressed ? p.mouseX : tempX;
+    tempY = isPressed ? p.mouseY : tempY;
+    thisX = thisX - (thisX - tempX) * 0.01;
+    thisY = thisY - (thisY - tempY) * 0.01;
+    camX = (width_half - thisX) * 0.006;
+    camY = (height_half - thisY) * 0.01;
+    p.rotateX(90 + camY);
+    p.rotateZ(45 + camX);
   }
+
   p.mouseWheel = function(event) {
     //move the square according to the vertical scroll amount
     zoom += event.delta;
@@ -150,7 +161,7 @@ const sketch = function (p) {
         ) * strength;
         // can directly place nPoint for smoother effects
          var zVector = nPoint * 6;
-        vertices[i][j] = p.createVector(i * grid, j * grid, 150 - zVector);
+        vertices[i][j] = p.createVector(i * grid, j * grid, zVector);
       }
     }
   };

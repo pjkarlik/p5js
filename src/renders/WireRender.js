@@ -1,7 +1,7 @@
 
 import p5 from 'p5';
 import { Generator } from './simplexNoise';
-import dat from 'dat-gui';
+import dat from 'dat.gui';
 
 /** Processing p5.js Sketch Definition          **/
 /* eslint-disable */
@@ -80,7 +80,7 @@ const sketch = function (p) {
     p.generateMesh();
     p.viewPort();
     // move to center to start drawing grid
-    p.translate(-width_half, -height, 200);
+    p.translate(-width_half, -height_half, -100);
     var size = width / spacing;
     for (var j = 0; j < spacing * 2; j++) {
       for (var i = 0; i < spacing; i++) {

@@ -1,10 +1,9 @@
 /* eslint no-console: 0 */
 'use strict';
-const AutoPrefixer = require('autoprefixer');
 const fs = require('fs');
 const path = require('path');
 const pkgInfo = require('./package.json');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { name, version, description } = pkgInfo;
 
@@ -15,6 +14,7 @@ const marker = 'debug';
 const config = {
   name: 'p5js',
   target: 'web',
+  mode: 'development',
   devServer: {
     disableHostCheck: true,
     host: '0.0.0.0',
@@ -38,7 +38,7 @@ const config = {
       {
         test: /\.(js|jsx)$/,
         include: [
-          /src/
+          /src/, /resources/
         ],
         use: [
           {
@@ -58,28 +58,24 @@ const config = {
       },
       {
         test: /\.less$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            {
-              loader: 'css-loader',
-              options: {
-                modules: true,
-                importLoaders: 1,
-                localIdentName: '[name]__[local]___[hash:base64:5]'
-              }
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                plugins: () => [AutoPrefixer]
-              }
-            },
-            'less-loader'
-          ],
-          publicPath: '../'
-        })
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              modules: true,
+              localIdentName: '[name]__[local]___[hash:base64:5]'
+            }
+          },
+          {
+            loader: 'less-loader'
+          }
+        ]
       },
+      // Image loading //
       {
         test: /\.(png|gif|cur|jpg)$/,
         use: [
@@ -104,17 +100,6 @@ const config = {
         ]
       },
       {
-        test: /\.(woff2|woff|eot|ttf|svg)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: 'fonts/[name]_[hash:base64:5].[ext]'
-            }
-          }
-        ]
-      },
-      {
         test: /\.js$/,
         enforce: 'pre',
         use: [
@@ -129,8 +114,8 @@ const config = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin({
-      filename: `style/[name].${marker}.[contenthash].css`,
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css',
       allChunks: true
     }),
     new HtmlWebpackPlugin({

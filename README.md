@@ -1,7 +1,9 @@
 ![travis ci build](https://travis-ci.org/pjkarlik/p5js.svg?branch=master)
-![webpack2](https://img.shields.io/badge/webpack-2.0-brightgreen.svg) ![version](https://img.shields.io/badge/version-0.1.0-yellow.svg) ![processing](https://img.shields.io/badge/p5js-0.5.11-blue.svg)
 
--[travis-ci build](https://travis-ci.org/pjkarlik/p5js)
+<img src="splash.png" alt="drawing" width="400px"/>
+
+![webpack](https://img.shields.io/badge/webpack-4.10.2-51b1c5.svg?style=flat-square) ![p5js](https://img.shields.io/badge/p5js-0.7.3-yellow.svg?style=flat-square)
+
 
 # p5js Demo
   My Experiments with p5js using simplex noise on 3d grids and matrix systems.
@@ -11,22 +13,12 @@
 
   * NEW: http://p5js-flyby.surge.sh/ Flyby Demo - put a nice song on and just watch!
 
-
-  * GlyRender - 3D Flyby demo - final render state.
-
-  * CbeRender - 3D Cub system, improving rendering and optimizations.
-
-  * ZrtRender - Grid system, block render method and opacity shaders.
-
-  * AltRender - Grid system, defaults to boxes and offset color shader.
-
-
-  Current Mapping --> ```index.js``` --> (render file) ```GlyRender.js``` (or just about any other file in src)
-
+  Current Mapping --> ```index.js``` --> (render file) ```renders\Render.js``` (or just about any other file in src)
 
   Render - Original Render, initial framework with basic interaction.
 
 ## Change Log
+  * Updated P5 to 0.7.3 / Webpack 4
   * Optimizations on display, and translation in p5js 3d space.
   * Mouse Down and Drag - to prevent constant movement.
   * AltRender.js - updated render functions.
@@ -37,13 +29,11 @@
   * Initial Commit - Basic formula added for simplexNoise.
 
 ## Run the example
-  Requires Node v7.0.0 or greater
+  Requires Node and Yarn to be installed for build and development.
 
-```bash
-$ yarn install
-$ yarn run dev & open http://localhost:8080
-```
-
-## License
-
-[MIT]
+  *Open a terminal window and type the following for local webpack dev server...*
+  ```bash
+  $ yarn install
+  $ yarn dev
+  ```
+  open http://localhost:2020
